@@ -1,0 +1,7 @@
+*.o
+example*
+*.ppm
+*.pgm
+*.out
+*.log
+*.swp
