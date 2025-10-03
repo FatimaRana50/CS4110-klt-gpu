@@ -1,0 +1,28 @@
+# Makefile.example3 - build and profile example3
+
+CC = gcc
+CFLAGS = -pg
+LIBS = -lm
+
+SRC = klt.c klt_util.c pnmio.c convolve.c error.c pyramid.c \
+      selectGoodFeatures.c trackFeatures.c writeFeatures.c storeFeatures.c
+
+TARGET = example3
+
+all: $(TARGET)
+
+$(TARGET): $(TARGET).c $(SRC)
+	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
+
+run: $(TARGET)
+	./$(TARGET)
+
+profile: run
+	gprof ./$(TARGET) gmon.out > $(TARGET)_analysis.txt
+
+callgraph: run
+	gprof ./$(TARGET) gmon.out | gprof2dot -s -f prof > $(TARGET)_callgraph.dot
+	dot -Tpng $(TARGET)_callgraph.dot -o $(TARGET)_callgraph.png
+
+clean:
+	rm -f $(TARGET) gmon.out *_analysis.txt *_callgraph.dot *_callgraph.png
