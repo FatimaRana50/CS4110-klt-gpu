@@ -1,5 +1,4 @@
 *.o
-example*
 *.ppm
 *.pgm
 *.out

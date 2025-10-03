@@ -1,4 +1,4 @@
-# Makefile.example3 - build and profile example3
+# Makefile.example3 - build, run, and profile example3 in one step
 
 CC = gcc
 CFLAGS = -pg
@@ -8,21 +8,21 @@ SRC = klt.c klt_util.c pnmio.c convolve.c error.c pyramid.c \
       selectGoodFeatures.c trackFeatures.c writeFeatures.c storeFeatures.c
 
 TARGET = example3
+PROF_DIR = profiling
 
 all: $(TARGET)
 
 $(TARGET): $(TARGET).c $(SRC)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
-run: $(TARGET)
+callgraph: $(TARGET)
+	mkdir -p $(PROF_DIR)
 	./$(TARGET)
-
-profile: run
-	gprof ./$(TARGET) gmon.out > $(TARGET)_analysis.txt
-
-callgraph: run
-	gprof ./$(TARGET) gmon.out | gprof2dot -s -f prof > $(TARGET)_callgraph.dot
-	dot -Tpng $(TARGET)_callgraph.dot -o $(TARGET)_callgraph.png
+	gprof ./$(TARGET) gmon.out > $(PROF_DIR)/$(TARGET)_analysis.txt
+	gprof ./$(TARGET) gmon.out | gprof2dot -s -f prof > $(PROF_DIR)/$(TARGET)_callgraph.dot
+	dot -Tpng $(PROF_DIR)/$(TARGET)_callgraph.dot -o $(PROF_DIR)/$(TARGET)_callgraph.png
+	mv gmon.out $(PROF_DIR)/
 
 clean:
-	rm -f $(TARGET) gmon.out *_analysis.txt *_callgraph.dot *_callgraph.png
+	rm -f $(TARGET)
+	rm -rf $(PROF_DIR)
