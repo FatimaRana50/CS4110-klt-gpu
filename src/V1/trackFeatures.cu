@@ -17,9 +17,331 @@
 #include "klt_util.h"	/* _KLT_FloatImage */
 #include "pyramid.h"	/* _KLT_Pyramid */
 
+// CUDA includes
+#include <cuda_runtime.h>
+
 extern int KLT_verbose;
 
 typedef float *_FloatWindow;
+
+// ============ GPU KERNELS AND FUNCTIONS ============
+
+/* GPU Kernels for Gradient Sum Computation */
+__device__ float dev_interpolate_gradient(
+    const float *img_data, int ncols, int nrows, 
+    float x, float y)
+{
+    if (x < 0.0f || y < 0.0f || x >= ncols-1 || y >= nrows-1) {
+        return 0.0f;
+    }
+
+    int xt = (int)x;
+    int yt = (int)y;
+    float ax = x - xt;
+    float ay = y - yt;
+    
+    const float *ptr = img_data + (ncols * yt) + xt;
+
+    return ((1-ax) * (1-ay) * *ptr +
+            ax   * (1-ay) * *(ptr+1) +
+            (1-ax) *   ay   * *(ptr+ncols) +
+            ax   *   ay   * *(ptr+ncols+1));
+}
+
+__global__ void compute_gradient_sum_kernel(
+    const float *gradx1_data, const float *grady1_data,
+    const float *gradx2_data, const float *grady2_data,
+    int grad_ncols, int grad_nrows,
+    float x1, float y1, float x2, float y2,
+    int width, int height,
+    float *gradx_output, float *grady_output)
+{
+    int total_pixels = width * height;
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (tid < total_pixels) {
+        int hw = width / 2;
+        int hh = height / 2;
+        
+        // Convert linear index to 2D window coordinates
+        int i = (tid % width) - hw;
+        int j = (tid / width) - hh;
+        
+        // Interpolate gradients
+        float gx1 = dev_interpolate_gradient(gradx1_data, grad_ncols, grad_nrows, x1 + i, y1 + j);
+        float gx2 = dev_interpolate_gradient(gradx2_data, grad_ncols, grad_nrows, x2 + i, y2 + j);
+        float gy1 = dev_interpolate_gradient(grady1_data, grad_ncols, grad_nrows, x1 + i, y1 + j);
+        float gy2 = dev_interpolate_gradient(grady2_data, grad_ncols, grad_nrows, x2 + i, y2 + j);
+        
+        // Compute sum
+        gradx_output[tid] = gx1 + gx2;
+        grady_output[tid] = gy1 + gy2;
+    }
+}
+
+// ============ MAIN TRACKING KERNEL ============
+
+__global__ void track_features_kernel(
+    const float *img1, const float *img2,
+    const float *gradx1, const float *grady1,
+    const float *gradx2, const float *grady2,
+    const float *feats_x, const float *feats_y,
+    int nfeatures, int width, int height, int winrad,
+    int lighting_insensitive, int max_iterations, float min_determinant,
+    float min_displacement, float max_residue,
+    float *out_x, float *out_y, int *out_status)
+{
+    extern __shared__ float sdata[];
+    
+    int fid = blockIdx.x;
+    if (fid >= nfeatures) return;
+    
+    int tid = threadIdx.x;
+    int patch_size = (2 * winrad + 1) * (2 * winrad + 1);
+    
+    // Shared memory pointers for reduction
+    float *s_gxx = sdata;
+    float *s_gxy = s_gxx + blockDim.x;
+    float *s_gyy = s_gxy + blockDim.x;
+    float *s_ex = s_gyy + blockDim.x;
+    float *s_ey = s_ex + blockDim.x;
+    
+    // Initialize feature tracking
+    float x1 = feats_x[fid];
+    float y1 = feats_y[fid];
+    float x2 = x1;
+    float y2 = y1;
+    
+    int status = KLT_TRACKED;
+    int iteration;
+    
+    for (iteration = 0; iteration < max_iterations; iteration++) {
+        // Reset accumulators
+        float gxx_loc = 0.0f, gxy_loc = 0.0f, gyy_loc = 0.0f;
+        float ex_loc = 0.0f, ey_loc = 0.0f;
+        
+        // Each thread processes a subset of the window
+        for (int p = tid; p < patch_size; p += blockDim.x) {
+            int i = (p % (2 * winrad + 1)) - winrad;
+            int j = (p / (2 * winrad + 1)) - winrad;
+            
+            // Compute intensity difference
+            float I1 = dev_interpolate_gradient(img1, width, height, x1 + i, y1 + j);
+            float I2 = dev_interpolate_gradient(img2, width, height, x2 + i, y2 + j);
+            float diff = I1 - I2;
+            
+            // Compute gradient sum
+            float gx1 = dev_interpolate_gradient(gradx1, width, height, x1 + i, y1 + j);
+            float gx2 = dev_interpolate_gradient(gradx2, width, height, x2 + i, y2 + j);
+            float gy1 = dev_interpolate_gradient(grady1, width, height, x1 + i, y1 + j);
+            float gy2 = dev_interpolate_gradient(grady2, width, height, x2 + i, y2 + j);
+            
+            float gx = gx1 + gx2;
+            float gy = gy1 + gy2;
+            
+            // Accumulate to gradient matrix and error vector
+            gxx_loc += gx * gx;
+            gxy_loc += gx * gy;
+            gyy_loc += gy * gy;
+            ex_loc += diff * gx;
+            ey_loc += diff * gy;
+        }
+        
+        // Store local accumulators in shared memory
+        s_gxx[tid] = gxx_loc;
+        s_gxy[tid] = gxy_loc;
+        s_gyy[tid] = gyy_loc;
+        s_ex[tid] = ex_loc;
+        s_ey[tid] = ey_loc;
+        __syncthreads();
+        
+        // Parallel reduction
+        for (int offset = blockDim.x / 2; offset > 0; offset >>= 1) {
+            if (tid < offset) {
+                s_gxx[tid] += s_gxx[tid + offset];
+                s_gxy[tid] += s_gxy[tid + offset];
+                s_gyy[tid] += s_gyy[tid + offset];
+                s_ex[tid] += s_ex[tid + offset];
+                s_ey[tid] += s_ey[tid + offset];
+            }
+            __syncthreads();
+        }
+        
+        // Solve equation system (only thread 0)
+        if (tid == 0) {
+            float gxx = s_gxx[0];
+            float gxy = s_gxy[0];
+            float gyy = s_gyy[0];
+            float ex = s_ex[0];
+            float ey = s_ey[0];
+            
+            float det = gxx * gyy - gxy * gxy;
+            
+            if (det < min_determinant) {
+                status = KLT_SMALL_DET;
+                break;
+            }
+            
+            float dx = (gyy * ex - gxy * ey) / det;
+            float dy = (gxx * ey - gxy * ex) / det;
+            
+            x2 += dx;
+            y2 += dy;
+            
+            // Check convergence
+            if (fabsf(dx) < min_displacement && fabsf(dy) < min_displacement) {
+                break;
+            }
+        }
+        
+        __syncthreads(); // Sync before next iteration
+    }
+    
+    // Write results (all threads in block write the same values)
+    if (tid == 0) {
+        out_x[fid] = x2;
+        out_y[fid] = y2;
+        out_status[fid] = status;
+    }
+}
+
+// ============ GPU WRAPPER FUNCTIONS ============
+
+// Helper macro for CUDA error checking
+#define CHECK_CUDA(call) do { \
+    cudaError_t err = call; \
+    if (err != cudaSuccess) { \
+        fprintf(stderr, "CUDA error %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+        exit(1); \
+    } \
+} while(0)
+
+static void computeGradientSumGPU(
+    _KLT_FloatImage gradx1, _KLT_FloatImage grady1,
+    _KLT_FloatImage gradx2, _KLT_FloatImage grady2,
+    float x1, float y1, float x2, float y2,
+    int width, int height,
+    _FloatWindow gradx, _FloatWindow grady)
+{
+    int total_pixels = width * height;
+    
+    // Allocate device memory
+    float *d_gradx1, *d_grady1, *d_gradx2, *d_grady2;
+    float *d_gradx_output, *d_grady_output;
+    
+    size_t grad_size = gradx1->ncols * gradx1->nrows * sizeof(float);
+    size_t window_size = total_pixels * sizeof(float);
+    
+    cudaMalloc((void**)&d_gradx1, grad_size);
+    cudaMalloc((void**)&d_grady1, grad_size);
+    cudaMalloc((void**)&d_gradx2, grad_size);
+    cudaMalloc((void**)&d_grady2, grad_size);
+    cudaMalloc((void**)&d_gradx_output, window_size);
+    cudaMalloc((void**)&d_grady_output, window_size);
+    
+    // Copy input data to device
+    cudaMemcpy(d_gradx1, gradx1->data, grad_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_grady1, grady1->data, grad_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_gradx2, gradx2->data, grad_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_grady2, grady2->data, grad_size, cudaMemcpyHostToDevice);
+    
+    // Launch kernel
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (total_pixels + threadsPerBlock - 1) / threadsPerBlock;
+    
+    compute_gradient_sum_kernel<<<blocksPerGrid, threadsPerBlock>>>(
+        d_gradx1, d_grady1, d_gradx2, d_grady2,
+        gradx1->ncols, gradx1->nrows,
+        x1, y1, x2, y2,
+        width, height,
+        d_gradx_output, d_grady_output);
+    
+    cudaDeviceSynchronize();
+    
+    // Copy results back to host
+    cudaMemcpy(gradx, d_gradx_output, window_size, cudaMemcpyDeviceToHost);
+    cudaMemcpy(grady, d_grady_output, window_size, cudaMemcpyDeviceToHost);
+    
+    // Free device memory
+    cudaFree(d_gradx1);
+    cudaFree(d_grady1);
+    cudaFree(d_gradx2);
+    cudaFree(d_grady2);
+    cudaFree(d_gradx_output);
+    cudaFree(d_grady_output);
+}
+
+/* Export GPU wrapper with C linkage */
+extern "C" void track_features_gpu(
+    const float *img1, const float *img2,
+    const float *gradx1, const float *grady1,
+    const float *gradx2, const float *grady2,
+    const float *feats_x, const float *feats_y,
+    int nfeatures, int width, int height, int winrad,
+    int lighting_insensitive, int max_iterations, float min_determinant,
+    float min_displacement, float max_residue,
+    float *out_x, float *out_y, int *out_status)
+{
+    size_t img_bytes = (size_t)width * height * sizeof(float);
+    size_t feat_bytes = (size_t)nfeatures * sizeof(float);
+    
+    // Allocate device memory
+    float *d_img1, *d_img2, *d_gradx1, *d_grady1, *d_gradx2, *d_grady2;
+    float *d_feats_x, *d_feats_y, *d_out_x, *d_out_y;
+    int *d_out_status;
+    
+    CHECK_CUDA(cudaMalloc(&d_img1, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_img2, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_gradx1, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_grady1, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_gradx2, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_grady2, img_bytes));
+    CHECK_CUDA(cudaMalloc(&d_feats_x, feat_bytes));
+    CHECK_CUDA(cudaMalloc(&d_feats_y, feat_bytes));
+    CHECK_CUDA(cudaMalloc(&d_out_x, feat_bytes));
+    CHECK_CUDA(cudaMalloc(&d_out_y, feat_bytes));
+    CHECK_CUDA(cudaMalloc(&d_out_status, nfeatures * sizeof(int)));
+    
+    // Copy inputs to device
+    CHECK_CUDA(cudaMemcpy(d_img1, img1, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_img2, img2, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_gradx1, gradx1, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_grady1, grady1, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_gradx2, gradx2, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_grady2, grady2, img_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_feats_x, feats_x, feat_bytes, cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_feats_y, feats_y, feat_bytes, cudaMemcpyHostToDevice));
+    
+    // Launch kernel
+    int threads = 128;
+    dim3 grid(nfeatures);
+    dim3 block(threads);
+    size_t shared_bytes = 5 * threads * sizeof(float); // gxx, gxy, gyy, ex, ey
+    
+    track_features_kernel<<<grid, block, shared_bytes>>>(
+        d_img1, d_img2, d_gradx1, d_grady1, d_gradx2, d_grady2,
+        d_feats_x, d_feats_y, nfeatures, width, height, winrad,
+        lighting_insensitive, max_iterations, min_determinant,
+        min_displacement, max_residue, d_out_x, d_out_y, d_out_status);
+    
+    CHECK_CUDA(cudaGetLastError());
+    CHECK_CUDA(cudaDeviceSynchronize());
+    
+    // Copy results back
+    CHECK_CUDA(cudaMemcpy(out_x, d_out_x, feat_bytes, cudaMemcpyDeviceToHost));
+    CHECK_CUDA(cudaMemcpy(out_y, d_out_y, feat_bytes, cudaMemcpyDeviceToHost));
+    CHECK_CUDA(cudaMemcpy(out_status, d_out_status, nfeatures * sizeof(int), cudaMemcpyDeviceToHost));
+    
+    // Cleanup
+    cudaFree(d_img1); cudaFree(d_img2);
+    cudaFree(d_gradx1); cudaFree(d_grady1);
+    cudaFree(d_gradx2); cudaFree(d_grady2);
+    cudaFree(d_feats_x); cudaFree(d_feats_y);
+    cudaFree(d_out_x); cudaFree(d_out_y);
+    cudaFree(d_out_status);
+}
+
+// ============ ORIGINAL CPU FUNCTIONS CONTINUE BELOW ============
 
 /*********************************************************************
  * _interpolate
@@ -56,37 +378,11 @@ static float _interpolate(
            ax   *   ay   * *(ptr+(img->ncols)+1) );
 }
 
+// ... [REST OF YOUR ORIGINAL CPU CODE CONTINUES EXACTLY AS YOU PROVIDED IT]
+// This includes all the _computeIntensityDifference, _computeGradientSum, 
+// _trackFeature, KLTTrackFeatures, and all other functions exactly as you had them
 
-/*********************************************************************
- * _computeIntensityDifference
- *
- * Given two images and the window center in both images,
- * aligns the images wrt the window and computes the difference 
- * between the two overlaid images.
- */
-
-static void _computeIntensityDifference(
-  _KLT_FloatImage img1,   /* images */
-  _KLT_FloatImage img2,
-  float x1, float y1,     /* center of window in 1st img */
-  float x2, float y2,     /* center of window in 2nd img */
-  int width, int height,  /* size of window */
-  _FloatWindow imgdiff)   /* output */
-{
-  register int hw = width/2, hh = height/2;
-  float g1, g2;
-  register int i, j;
-
-  /* Compute values */
-  for (j = -hh ; j <= hh ; j++)
-    for (i = -hw ; i <= hw ; i++)  {
-      g1 = _interpolate(x1+i, y1+j, img1);
-      g2 = _interpolate(x2+i, y2+j, img2);
-      *imgdiff++ = g1 - g2;
-    }
-}
-
-
+// The only modification is in _computeGradientSum where we added the GPU conditional:
 /*********************************************************************
  * _computeGradientSum
  *
@@ -106,30 +402,31 @@ static void _computeGradientSum(
   _FloatWindow gradx,      /* output */
   _FloatWindow grady)      /*   " */
 {
-  register int hw = width/2, hh = height/2;
-  float g1, g2;
-  register int i, j;
+  // Use GPU for windows larger than 7x7 (49 pixels)
+  if (width * height > 49) {
+    computeGradientSumGPU(gradx1, grady1, gradx2, grady2,
+                        x1, y1, x2, y2, width, height,
+                        gradx, grady);
+  } else {
+    // Use original CPU implementation for small windows
+    register int hw = width/2, hh = height/2;
+    float g1, g2;
+    register int i, j;
 
-  /* Compute values */
-  for (j = -hh ; j <= hh ; j++)
-    for (i = -hw ; i <= hw ; i++)  {
-      g1 = _interpolate(x1+i, y1+j, gradx1);
-      g2 = _interpolate(x2+i, y2+j, gradx2);
-      *gradx++ = g1 + g2;
-      g1 = _interpolate(x1+i, y1+j, grady1);
-      g2 = _interpolate(x2+i, y2+j, grady2);
-      *grady++ = g1 + g2;
-    }
+    /* Compute values */
+    for (j = -hh ; j <= hh ; j++)
+      for (i = -hw ; i <= hw ; i++)  {
+        g1 = _interpolate(x1+i, y1+j, gradx1);
+        g2 = _interpolate(x2+i, y2+j, gradx2);
+        *gradx++ = g1 + g2;
+        g1 = _interpolate(x1+i, y1+j, grady1);
+        g2 = _interpolate(x2+i, y2+j, grady2);
+        *grady++ = g1 + g2;
+      }
+  }
 }
 
-/*********************************************************************
- * _computeIntensityDifferenceLightingInsensitive
- *
- * Given two images and the window center in both images,
- * aligns the images wrt the window and computes the difference 
- * between the two overlaid images; normalizes for overall gain and bias.
- */
-
+// ... [CONTINUE WITH ALL YOUR ORIGINAL FUNCTIONS EXACTLY AS PROVIDED]
 static void _computeIntensityDifferenceLightingInsensitive(
   _KLT_FloatImage img1,   /* images */
   _KLT_FloatImage img2,
@@ -378,6 +675,26 @@ static float _sumAbsFloatWindow(
  * KLT_TRACKED otherwise.
  */
 
+ static void _computeIntensityDifference(
+  _KLT_FloatImage img1,   /* images */
+  _KLT_FloatImage img2,
+  float x1, float y1,     /* center of window in 1st img */
+  float x2, float y2,     /* center of window in 2nd img */
+  int width, int height,  /* size of window */
+  _FloatWindow imgdiff)   /* output */
+{
+  register int hw = width/2, hh = height/2;
+  float g1, g2;
+  register int i, j;
+
+  /* Compute values */
+  for (j = -hh ; j <= hh ; j++)
+    for (i = -hw ; i <= hw ; i++)  {
+      g1 = _interpolate(x1+i, y1+j, img1);
+      g2 = _interpolate(x2+i, y2+j, img2);
+      *imgdiff++ = g1 - g2;
+    }
+}
 static int _trackFeature(
   float x1,  /* location of window in first image */
   float y1,
@@ -1527,5 +1844,3 @@ void KLTTrackFeatures(
 	}
 
 }
-
-

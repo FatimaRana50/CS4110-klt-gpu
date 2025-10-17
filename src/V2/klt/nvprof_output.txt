@@ -1,0 +1,34 @@
+======== Warning: CUDA device error, GPU profiling skipped
+(KLT) Selecting the 150 best features from a 320 by 240 image...  
+	0 features found.
+(KLT) Writing 0 features to PPM file: 'feat0.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat1.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat2.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat3.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat4.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat5.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat6.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat7.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat8.ppm'
+(KLT) Tracking 0 features in a 320 by 240 image...  
+	0 features successfully tracked.
+(KLT) Writing 0 features to PPM file: 'feat9.ppm'
+(KLT) Writing feature table to text file: 'features.txt'
+(KLT) Writing feature table to binary file: 'features.ft'
+======== Warning: No profile data collected.

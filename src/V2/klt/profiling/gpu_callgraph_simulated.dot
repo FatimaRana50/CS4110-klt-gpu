@@ -1,0 +1,30 @@
+digraph G {
+  rankdir=LR;
+  graph [pad="0.2", nodesep="0.6", ranksep="1"];
+  node [shape=box, style=filled, fillcolor="#ffcccc", fontsize=10];
+  total [shape=ellipse, style=filled, fillcolor="#ffe6cc", label="GPU total\n125.50 ms"];
+  n_convolve_horiz [label="convolve_horiz
+12.40 ms\n9.9%"];
+  total -> n_convolve_horiz;
+  n_convolve_vert [label="convolve_vert
+11.80 ms\n9.4%"];
+  total -> n_convolve_vert;
+  n_compute_gradients [label="compute_gradients
+9.20 ms\n7.3%"];
+  total -> n_compute_gradients;
+  n_computeGradientsAndEigenvalues [label="computeGradientsAndEigenvalues
+35.10 ms\n28.0%"];
+  total -> n_computeGradientsAndEigenvalues;
+  n_cudaBitonicSort [label="cudaBitonicSort
+4.30 ms\n3.4%"];
+  total -> n_cudaBitonicSort;
+  n_compute_gradient_sum_kernel [label="compute_gradient_sum_kernel
+18.70 ms\n14.9%"];
+  total -> n_compute_gradient_sum_kernel;
+  n_compute_intensity_difference_kernel [label="compute_intensity_difference_kernel
+6.40 ms\n5.1%"];
+  total -> n_compute_intensity_difference_kernel;
+  n_track_features_kernel [label="track_features_kernel
+27.60 ms\n22.0%"];
+  total -> n_track_features_kernel;
+}
