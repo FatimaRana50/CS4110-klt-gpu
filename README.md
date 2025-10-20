@@ -86,6 +86,56 @@ CS4110-klt-gpu/
 │
 └── README.md
 ```
+## V2: GPU-Accelerated KLT Feature Tracker
+
+This version represents the **GPU-accelerated implementation** of the KLT feature tracker. Core computational functions have been ported to CUDA for parallel execution on the GPU, improving performance over the CPU-only baseline (V1).
+
+### Features
+- GPU kernels for:
+  - `convolve_horiz` and `convolve_vert` (separable convolution)
+  - `compute_gradients` (image derivatives)
+  - `computeGradientsAndEigenvalues` (gradient magnitudes and eigenvalues)
+  - `compute_intensity_difference_kernel` and `compute_gradient_sum_kernel` (per-patch accumulation)
+  - `track_features_kernel` (per-feature tracking)
+- Naive GPU port with correct results (no advanced memory optimizations yet)
+- Profiling support to identify performance bottlenecks
+
+### Performance
+- GPU execution time: ~389 ms  
+- CPU baseline: ~500 ms  
+- Overall speedup: ~1.3×
+- `compute_gradient_sum_kernel` dominates runtime (~62% of GPU time)
+- Graphical profiling results shown below
+
+### Graphical Profiling
+
+![GPU Call Graph](src/V2/klt/profiling/gpu_callgraph_from_timings.png)
+
+*Location: `src/V2/klt/profiling/gpu_callgraph_from_timings.png`*
+
+### Compilation & Running
+
+All code is compiled using the provided Makefile:
+
+
+# Navigate to V2 directory
+
+```
+cd src/V2/klt
+```
+
+# Compile the GPU version
+
+```
+make run
+```
+
+# Run the example and profile it to draw graph
+ ```
+make profile_gpu
+```
+
+
 
 👩‍💻 Contributors
 
