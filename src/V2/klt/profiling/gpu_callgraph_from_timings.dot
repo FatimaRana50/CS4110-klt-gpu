@@ -1,13 +1,15 @@
 digraph G {
   rankdir=TB;
   node [shape=box, style=filled, fontname="Helvetica"];
-  "compute_gradients" [label="compute_gradients\n92.01%\n(35.017 ms)", fillcolor="#d62728", fontcolor="#ffffff", fontsize=18, style=filled, shape=box];
-  "cudaBitonicSort" [label="cudaBitonicSort\n4.25%\n(1.618 ms)", fillcolor="#17a2b8", fontsize=11, style=filled, shape=box];
-  "convolve_horiz" [label="convolve_horiz\n1.82%\n(0.694 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
-  "convolve_vert" [label="convolve_vert\n1.81%\n(0.689 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
-  "computeGradientsAndEigenvalues" [label="computeGradientsAndEigenvalues\n0.11%\n(0.041 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
-  "compute_gradients" -> "cudaBitonicSort" [label="4.25%", color="#4f94d4", penwidth=1.00];
-  "compute_gradients" -> "convolve_horiz" [label="1.82%", color="#4f94d4", penwidth=1.00];
-  "compute_gradients" -> "convolve_vert" [label="1.81%", color="#4f94d4", penwidth=1.00];
-  "compute_gradients" -> "computeGradientsAndEigenvalues" [label="0.11%", color="#4f94d4", penwidth=1.00];
+  "compute_gradient_sum_kernel" [label="compute_gradient_sum_kernel\n62.04%\n(391.139 ms)", fillcolor="#d62728", fontcolor="#ffffff", fontsize=18, style=filled, shape=box];
+  "compute_gradients" [label="compute_gradients\n32.24%\n(203.227 ms)", fillcolor="#2ca02c", fontsize=12, style=filled, shape=box];
+  "cudaBitonicSort" [label="cudaBitonicSort\n1.82%\n(11.498 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
+  "convolve_horiz" [label="convolve_horiz\n1.81%\n(11.440 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
+  "convolve_vert" [label="convolve_vert\n1.58%\n(9.986 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
+  "computeGradientsAndEigenvalues" [label="computeGradientsAndEigenvalues\n0.50%\n(3.146 ms)", fillcolor="#1f77b4", fontsize=10, style=filled, shape=box];
+  "compute_gradient_sum_kernel" -> "compute_gradients" [label="32.24%", color="#4f94d4", penwidth=6.45];
+  "compute_gradient_sum_kernel" -> "cudaBitonicSort" [label="1.82%", color="#4f94d4", penwidth=1.00];
+  "compute_gradient_sum_kernel" -> "convolve_horiz" [label="1.81%", color="#4f94d4", penwidth=1.00];
+  "compute_gradient_sum_kernel" -> "convolve_vert" [label="1.58%", color="#4f94d4", penwidth=1.00];
+  "compute_gradient_sum_kernel" -> "computeGradientsAndEigenvalues" [label="0.50%", color="#4f94d4", penwidth=1.00];
 }

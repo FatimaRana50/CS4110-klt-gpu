@@ -77,6 +77,7 @@ __global__ void compute_gradient_sum_kernel(
         // Compute sum
         gradx_output[tid] = gx1 + gx2;
         grady_output[tid] = gy1 + gy2;
+        //printf("we are in the __global__ void compute_gradient_sum_kernel\n");
     }
 }
 
@@ -629,17 +630,18 @@ static void _computeGradientSum(
   _FloatWindow grady)      /*   " */
 {
   // Use GPU for windows larger than 7x7 (49 pixels)
-  if (width * height > 49) {
+  //if (width * height > 49) 
+  {
     computeGradientSumGPU(gradx1, grady1, gradx2, grady2,
                         x1, y1, x2, y2, width, height,
                         gradx, grady);
-  } else {
+  } /*else {
     // Use original CPU implementation for small windows
     register int hw = width/2, hh = height/2;
     float g1, g2;
     register int i, j;
 
-    /* Compute values */
+   
     for (j = -hh ; j <= hh ; j++)
       for (i = -hw ; i <= hw ; i++)  {
         g1 = _interpolate(x1+i, y1+j, gradx1);
@@ -649,7 +651,8 @@ static void _computeGradientSum(
         g2 = _interpolate(x2+i, y2+j, grady2);
         *grady++ = g1 + g2;
       }
-  }
+  }*/
+  
 }
 
 // ... [CONTINUE WITH ALL YOUR ORIGINAL FUNCTIONS EXACTLY AS PROVIDED]
