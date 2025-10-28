@@ -1,0 +1,108 @@
+WARNING: CPU IP/backtrace sampling not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+WARNING: CPU context switch tracing not supported, disabling.
+Try the 'nsys status --environment' command to learn more.
+
+(KLT) Selecting the 150 best features from a 320 by 240 image...  
+	150 features found.
+(KLT) Writing 150 features to PPM file: 'feat0.ppm'
+(KLT) Tracking 150 features in a 320 by 240 image...  
+	140 features successfully tracked.
+(KLT) Writing 140 features to PPM file: 'feat1.ppm'
+(KLT) Tracking 140 features in a 320 by 240 image...  
+	136 features successfully tracked.
+(KLT) Writing 136 features to PPM file: 'feat2.ppm'
+(KLT) Tracking 136 features in a 320 by 240 image...  
+	136 features successfully tracked.
+(KLT) Writing 136 features to PPM file: 'feat3.ppm'
+(KLT) Tracking 136 features in a 320 by 240 image...  
+	134 features successfully tracked.
+(KLT) Writing 134 features to PPM file: 'feat4.ppm'
+(KLT) Tracking 134 features in a 320 by 240 image...  
+	132 features successfully tracked.
+(KLT) Writing 132 features to PPM file: 'feat5.ppm'
+(KLT) Tracking 132 features in a 320 by 240 image...  
+	129 features successfully tracked.
+(KLT) Writing 129 features to PPM file: 'feat6.ppm'
+(KLT) Tracking 129 features in a 320 by 240 image...  
+	125 features successfully tracked.
+(KLT) Writing 125 features to PPM file: 'feat7.ppm'
+(KLT) Tracking 125 features in a 320 by 240 image...  
+	123 features successfully tracked.
+(KLT) Writing 123 features to PPM file: 'feat8.ppm'
+(KLT) Tracking 123 features in a 320 by 240 image...  
+	120 features successfully tracked.
+(KLT) Writing 120 features to PPM file: 'feat9.ppm'
+(KLT) Writing feature table to text file: 'features.txt'
+(KLT) Writing feature table to binary file: 'features.ft'
+Collecting data...
+Generating '/tmp/nsys-report-7a72.qdstrm'
+[1/8] [0%                          ] profile.nsys-rep[1/8] [0%                          ] profile.nsys-rep[1/8] [==20%                       ] profile.nsys-rep[1/8] [========40%                 ] profile.nsys-rep[1/8] [==================77%       ] profile.nsys-rep[1/8] [========================100%] profile.nsys-rep[1/8] [========================100%] profile.nsys-rep
+[2/8] [0%                          ] profile.sqlite[2/8] [1%                          ] profile.sqlite[2/8] [2%                          ] profile.sqlite[2/8] [3%                          ] profile.sqlite[2/8] [4%                          ] profile.sqlite[2/8] [5%                          ] profile.sqlite[2/8] [6%                          ] profile.sqlite[2/8] [7%                          ] profile.sqlite[2/8] [8%                          ] profile.sqlite[2/8] [9%                          ] profile.sqlite[2/8] [10%                         ] profile.sqlite[2/8] [11%                         ] profile.sqlite[2/8] [12%                         ] profile.sqlite[2/8] [13%                         ] profile.sqlite[2/8] [14%                         ] profile.sqlite[2/8] [=15%                        ] profile.sqlite[2/8] [=16%                        ] profile.sqlite[2/8] [=17%                        ] profile.sqlite[2/8] [==18%                       ] profile.sqlite[2/8] [==19%                       ] profile.sqlite[2/8] [==20%                       ] profile.sqlite[2/8] [==21%                       ] profile.sqlite[2/8] [===22%                      ] profile.sqlite[2/8] [===23%                      ] profile.sqlite[2/8] [===24%                      ] profile.sqlite[2/8] [====25%                     ] profile.sqlite[2/8] [====26%                     ] profile.sqlite[2/8] [====27%                     ] profile.sqlite[2/8] [====28%                     ] profile.sqlite[2/8] [=====29%                    ] profile.sqlite[2/8] [=====30%                    ] profile.sqlite[2/8] [=====31%                    ] profile.sqlite[2/8] [=====32%                    ] profile.sqlite[2/8] [======33%                   ] profile.sqlite[2/8] [======34%                   ] profile.sqlite[2/8] [======35%                   ] profile.sqlite[2/8] [=======36%                  ] profile.sqlite[2/8] [=======37%                  ] profile.sqlite[2/8] [=======38%                  ] profile.sqlite[2/8] [=======39%                  ] profile.sqlite[2/8] [========40%                 ] profile.sqlite[2/8] [========41%                 ] profile.sqlite[2/8] [========42%                 ] profile.sqlite[2/8] [=========43%                ] profile.sqlite[2/8] [=========44%                ] profile.sqlite[2/8] [=========45%                ] profile.sqlite[2/8] [=========46%                ] profile.sqlite[2/8] [==========47%               ] profile.sqlite[2/8] [==========48%               ] profile.sqlite[2/8] [==========49%               ] profile.sqlite[2/8] [===========50%              ] profile.sqlite[2/8] [===========51%              ] profile.sqlite[2/8] [===========52%              ] profile.sqlite[2/8] [===========53%              ] profile.sqlite[2/8] [============54%             ] profile.sqlite[2/8] [============55%             ] profile.sqlite[2/8] [============56%             ] profile.sqlite[2/8] [============57%             ] profile.sqlite[2/8] [=============58%            ] profile.sqlite[2/8] [=============59%            ] profile.sqlite[2/8] [=============60%            ] profile.sqlite[2/8] [==============61%           ] profile.sqlite[2/8] [==============62%           ] profile.sqlite[2/8] [==============63%           ] profile.sqlite[2/8] [==============64%           ] profile.sqlite[2/8] [===============65%          ] profile.sqlite[2/8] [===============66%          ] profile.sqlite[2/8] [===============67%          ] profile.sqlite[2/8] [================68%         ] profile.sqlite[2/8] [================69%         ] profile.sqlite[2/8] [================70%         ] profile.sqlite[2/8] [================71%         ] profile.sqlite[2/8] [=================72%        ] profile.sqlite[2/8] [=================73%        ] profile.sqlite[2/8] [=================74%        ] profile.sqlite[2/8] [==================75%       ] profile.sqlite[2/8] [==================76%       ] profile.sqlite[2/8] [==================77%       ] profile.sqlite[2/8] [==================78%       ] profile.sqlite[2/8] [===================79%      ] profile.sqlite[2/8] [===================80%      ] profile.sqlite[2/8] [===================81%      ] profile.sqlite[2/8] [===================82%      ] profile.sqlite[2/8] [====================83%     ] profile.sqlite[2/8] [====================84%     ] profile.sqlite[2/8] [====================85%     ] profile.sqlite[2/8] [=====================86%    ] profile.sqlite[2/8] [=====================87%    ] profile.sqlite[2/8] [=====================88%    ] profile.sqlite[2/8] [=====================89%    ] profile.sqlite[2/8] [======================90%   ] profile.sqlite[2/8] [======================91%   ] profile.sqlite[2/8] [======================92%   ] profile.sqlite[2/8] [=======================93%  ] profile.sqlite[2/8] [=======================94%  ] profile.sqlite[2/8] [=======================95%  ] profile.sqlite[2/8] [=======================96%  ] profile.sqlite[2/8] [========================97% ] profile.sqlite[2/8] [========================98% ] profile.sqlite[2/8] [========================99% ] profile.sqlite[2/8] [========================100%] profile.sqlite[2/8] [========================100%] profile.sqlite
+SKIPPED: /home/fuul/CS4110-klt-gpu/src/V3/klt/profile.sqlite does not contain NV Tools Extension (NVTX) data.
+[3/8] Executing 'nvtx_sum' stats report
+[4/8] Executing 'osrt_sum' stats report
+
+ Time (%)  Total Time (ns)  Num Calls    Avg (ns)     Med (ns)    Min (ns)   Max (ns)    StdDev (ns)            Name         
+ --------  ---------------  ---------  ------------  -----------  --------  -----------  ------------  ----------------------
+     87.8      352,076,294         12  29,339,691.2  1,349,951.0    22,706  151,121,884  48,801,347.8  poll                  
+     10.7       42,989,684        674      63,782.9      9,844.0     1,037   12,363,631     588,418.3  ioctl                 
+      0.5        2,146,281        696       3,083.7      2,723.5     1,022       19,533       1,681.8  fwrite                
+      0.3        1,203,083         27      44,558.6      6,740.0     3,773      768,636     145,758.2  mmap64                
+      0.2          717,066         56      12,804.8      3,428.0     1,051       62,731      19,289.2  fopen                 
+      0.1          573,993          9      63,777.0     56,058.0     7,852      235,175      69,716.3  sem_timedwait         
+      0.1          529,969         18      29,442.7     44,085.5     1,260       63,917      23,112.5  fclose                
+      0.0          192,005         45       4,266.8      3,684.0     1,677       10,144       1,760.6  open64                
+      0.0          117,578         13       9,044.5      4,032.0     1,052       63,922      16,761.1  mmap                  
+      0.0           94,372          1      94,372.0     94,372.0    94,372       94,372           0.0  pthread_cond_wait     
+      0.0           84,534          3      28,178.0     25,097.0    19,390       40,047      10,667.6  pthread_create        
+      0.0           62,653         35       1,790.1      1,283.0     1,009        4,397       1,015.5  fread                 
+      0.0           44,294          5       8,858.8      4,216.0     2,908       25,702       9,678.5  munmap                
+      0.0           28,655          1      28,655.0     28,655.0    28,655       28,655           0.0  fgets                 
+      0.0           24,814          6       4,135.7      3,675.0     1,302        6,774       2,169.6  close                 
+      0.0           17,759          6       2,959.8      3,436.0     1,216        4,227       1,189.0  open                  
+      0.0           13,672          2       6,836.0      6,836.0     5,733        7,939       1,559.9  socket                
+      0.0            9,745          3       3,248.3      3,710.0     1,206        4,829       1,855.1  pipe2                 
+      0.0            8,235          5       1,647.0      1,622.0     1,140        2,259         462.9  write                 
+      0.0            7,518          6       1,253.0      1,089.5     1,005        1,791         323.7  read                  
+      0.0            6,713          1       6,713.0      6,713.0     6,713        6,713           0.0  connect               
+      0.0            2,655          1       2,655.0      2,655.0     2,655        2,655           0.0  fcntl                 
+      0.0            1,797          1       1,797.0      1,797.0     1,797        1,797           0.0  bind                  
+      0.0            1,481          1       1,481.0      1,481.0     1,481        1,481           0.0  pthread_cond_broadcast
+
+[5/8] Executing 'cuda_api_sum' stats report
+
+ Time (%)  Total Time (ns)  Num Calls  Avg (ns)   Med (ns)  Min (ns)   Max (ns)   StdDev (ns)         Name       
+ --------  ---------------  ---------  ---------  --------  --------  ----------  -----------  ------------------
+     86.4       60,823,275        147  413,763.8   1,835.0     1,106  58,239,044  4,802,087.9  cudaMalloc        
+      7.1        5,012,835        105   47,741.3  25,165.0     5,545     197,084     44,395.9  cudaMemcpy        
+      3.0        2,115,637        126   16,790.8   7,884.0     3,859      53,204     17,164.6  cudaMemcpyToSymbol
+      2.7        1,896,592        147   12,902.0   7,105.0     1,250      55,923     14,524.8  cudaFree          
+      0.8          539,602        126    4,282.6   2,849.0     2,295      23,800      3,078.1  cudaLaunchKernel  
+      0.0           17,377          1   17,377.0  17,377.0    17,377      17,377          0.0  cudaStreamCreate  
+
+[6/8] Executing 'cuda_gpu_kern_sum' stats report
+
+ Time (%)  Total Time (ns)  Instances  Avg (ns)  Med (ns)  Min (ns)  Max (ns)  StdDev (ns)                          Name                        
+ --------  ---------------  ---------  --------  --------  --------  --------  -----------  ----------------------------------------------------
+     50.5          272,505         63   4,325.5   4,703.0     1,824     8,544      2,180.6  ConvH_ZeroPad(const float *, float *, int, int, int)
+     49.5          267,127         63   4,240.1   4,959.0     1,920     7,583      1,879.1  ConvV_ZeroPad(const float *, float *, int, int, int)
+
+[7/8] Executing 'cuda_gpu_mem_time_sum' stats report
+
+ Time (%)  Total Time (ns)  Count  Avg (ns)  Med (ns)  Min (ns)  Max (ns)  StdDev (ns)           Operation          
+ --------  ---------------  -----  --------  --------  --------  --------  -----------  ----------------------------
+     55.2        1,837,484     63  29,166.4  40,735.0     2,112    49,663     18,658.7  [CUDA memcpy Device-to-Host]
+     44.8        1,490,682    168   8,873.1     384.0       351    50,975     17,252.5  [CUDA memcpy Host-to-Device]
+
+[8/8] Executing 'cuda_gpu_mem_size_sum' stats report
+
+ Total (MB)  Count  Avg (MB)  Med (MB)  Min (MB)  Max (MB)  StdDev (MB)           Operation          
+ ----------  -----  --------  --------  --------  --------  -----------  ----------------------------
+     13.594     63     0.216     0.307     0.019     0.307        0.135  [CUDA memcpy Device-to-Host]
+     10.027    168     0.060     0.000     0.000     0.307        0.121  [CUDA memcpy Host-to-Device]
+
+Generated:
+	/home/fuul/CS4110-klt-gpu/src/V3/klt/profile.nsys-rep
+	/home/fuul/CS4110-klt-gpu/src/V3/klt/profile.sqlite
