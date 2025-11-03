@@ -7,7 +7,7 @@ LIBS = -lm
 SRC = klt.c klt_util.c pnmio.c convolve.c error.c pyramid.c \
       selectGoodFeatures.c trackFeatures.c writeFeatures.c storeFeatures.c
 
-TARGET = example3
+TARGET = example3Masooma
 PROF_DIR = profiling
 
 all: $(TARGET)

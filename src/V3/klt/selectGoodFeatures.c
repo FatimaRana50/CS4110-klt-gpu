@@ -8,7 +8,9 @@
 #include <stdlib.h> /* malloc(), qsort() */
 #include <stdio.h>  /* fflush()          */
 #include <string.h> /* memset()          */
-#include <math.h>   /* fsqrt()           */
+#include <math.h>
+   /* fsqrt()           */
+#include "min_eigenvalue_kernel.cuh"
 #define fsqrt(X) sqrt(X)
 
 /* Our includes */
@@ -372,56 +374,32 @@ void _KLTSelectGoodFeatures(
 
   /* Compute trackability of each image pixel as the minimum
      of the two eigenvalues of the Z matrix */
-  {
-    register float gx, gy;
-    register float gxx, gxy, gyy;
-    register int xx, yy;
-    register int *ptr;
-    float val;
+  /**/ 
+ /* Compute trackability of each image pixel as the minimum
+   of the two eigenvalues of the Z matrix */
+{
     unsigned int limit = 1;
-    int borderx = tc->borderx;	/* Must not touch cols */
-    int bordery = tc->bordery;	/* lost by convolution */
-    int x, y;
+    int borderx = tc->borderx;
+    int bordery = tc->bordery;
     int i;
-	
+    
     if (borderx < window_hw)  borderx = window_hw;
     if (bordery < window_hh)  bordery = window_hh;
 
     /* Find largest value of an int */
     for (i = 0 ; i < sizeof(int) ; i++)  limit *= 256;
     limit = limit/2 - 1;
-		
-    /* For most of the pixels in the image, do ... */
-    ptr = pointlist;
-    for (y = bordery ; y < nrows - bordery ; y += tc->nSkippedPixels + 1)
-      for (x = borderx ; x < ncols - borderx ; x += tc->nSkippedPixels + 1)  {
-
-        /* Sum the gradients in the surrounding window */
-        gxx = 0;  gxy = 0;  gyy = 0;
-        for (yy = y-window_hh ; yy <= y+window_hh ; yy++)
-          for (xx = x-window_hw ; xx <= x+window_hw ; xx++)  {
-            gx = *(gradx->data + ncols*yy+xx);
-            gy = *(grady->data + ncols*yy+xx);
-            gxx += gx * gx;
-            gxy += gx * gy;
-            gyy += gy * gy;
-          }
-
-        /* Store the trackability of the pixel as the minimum
-           of the two eigenvalues */
-        *ptr++ = x;
-        *ptr++ = y;
-        val = _minEigenvalue(gxx, gxy, gyy);
-        if (val > limit)  {
-          KLTWarning("(_KLTSelectGoodFeatures) minimum eigenvalue %f is "
-                     "greater than the capacity of an int; setting "
-                     "to maximum value", val);
-          val = (float) limit;
-        }
-        *ptr++ = (int) val;
-        npoints++;
-      }
-  }
+    
+    /* Use GPU for eigenvalue computation */
+    computeMinEigenvaluesGPU(
+        gradx->data, grady->data, pointlist, ncols, nrows,
+        window_hw, window_hh, borderx, bordery, tc->nSkippedPixels);
+    
+    /* Calculate npoints from the grid dimensions */
+    int grid_width = (ncols - 2 * borderx + tc->nSkippedPixels) / (tc->nSkippedPixels + 1);
+    int grid_height = (nrows - 2 * bordery + tc->nSkippedPixels) / (tc->nSkippedPixels + 1);
+    npoints = grid_width * grid_height;
+}
 			
   /* Sort the features  */
   _sortPointList(pointlist, npoints);
@@ -539,4 +517,3 @@ void KLTReplaceLostFeatures(
     fflush(stderr);
   }
 }
-
