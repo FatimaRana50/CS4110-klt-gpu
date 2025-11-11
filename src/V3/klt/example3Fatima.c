@@ -19,7 +19,7 @@ int main()
     KLT_FeatureList fl;
     KLT_FeatureTable ft;
 
-    int nFeatures = 150;
+    int nFeatures = 1000;
     int startFrame = 1, endFrame = 164;
     int nFrames = endFrame - startFrame + 1;
     int ncols, nrows;

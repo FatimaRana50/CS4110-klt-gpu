@@ -19,7 +19,7 @@ CUSRCS = convolve_gpu.cu trackFeatures.cu min_eigenvalue_kernel.cu
 
 OBJS = $(CSRCS:.c=.o) $(CUSRCS:.cu=.o)
 
-MAIN = example3Fatima.c
+MAIN = example3Masooma.c
 TARGET = klt_tracker
 
 all: $(TARGET)

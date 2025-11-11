@@ -1,5 +1,5 @@
 /*********************************************************************
- * trackFeatures_optimized.cu  (ENHANCED - File 2 Optimizations Applied)
+ * trackFeatures_optimized.cu  (ENHANCED - File 2 Optimizations Applied + TIMING)
  *
  * Key optimizations added from File 2:
  * - Batched feature processing with FeatureData structure
@@ -8,6 +8,8 @@
  * - Pointer swapping for sequential mode pyramid reuse
  * - Persistent feature buffers
  * - All features processed in parallel on GPU
+ * 
+ * NEW: GPU execution timing from first to last GPU operation
  * 
  * Algorithm and computations UNCHANGED from File 1
  *********************************************************************/
@@ -335,6 +337,10 @@ static struct {
   cudaStream_t streams[NUM_STREAMS];
   cudaEvent_t events[NUM_STREAMS];
   
+  /* Timing events for performance measurement */
+  cudaEvent_t timing_start;
+  cudaEvent_t timing_stop;
+  
   int initialized;
   int num_levels;
   int pyramids_on_gpu;  // Flag for pointer swapping optimization
@@ -352,6 +358,10 @@ static void tf_init_memory_pool(int num_pyramid_levels)
     cudaStreamCreateWithFlags(&g_pool.streams[i], cudaStreamNonBlocking);
     cudaEventCreate(&g_pool.events[i]);
   }
+  
+  /* Create timing events */
+  cudaEventCreate(&g_pool.timing_start);
+  cudaEventCreate(&g_pool.timing_stop);
   
   size_t max_win_bytes = (size_t)MAX_WINDOW_SIZE * (size_t)MAX_WINDOW_SIZE * sizeof(float);
   
@@ -533,6 +543,10 @@ void KLTFreeGPUResources(void)
   // Free persistent feature buffers
   if (g_pool.d_features) cudaFree(g_pool.d_features);
   if (g_pool.h_features) cudaFreeHost(g_pool.h_features);
+  
+  // Destroy timing events
+  if (g_pool.timing_start) cudaEventDestroy(g_pool.timing_start);
+  if (g_pool.timing_stop) cudaEventDestroy(g_pool.timing_stop);
   
   for (int i = 0; i < NUM_STREAMS; i++) {
     cudaStreamDestroy(g_pool.streams[i]);
@@ -936,6 +950,19 @@ void KLTTrackFeatures(
   /* Initialize memory pool once at start */
   tf_init_memory_pool(tc->nPyramidLevels);
   
+  /* ============= START GPU TIMING ============= */
+  /* Ensure no previous GPU work is running before starting timer */
+  cudaDeviceSynchronize();
+  
+  /* Start timer - will capture ALL GPU operations:
+   * 1. Constant memory uploads (cudaMemcpyToSymbol)
+   * 2. Pyramid smoothing (_KLTComputeSmoothedImage) 
+   * 3. Gradient computation (_KLTComputeGradients)
+   * 4. Pyramid uploads to GPU
+   * 5. Feature tracking kernels
+   */
+  cudaEventRecord(g_pool.timing_start, 0);
+  
   /* Invalidate caches for new frame pair */
   tf_invalidate_caches();
   
@@ -985,6 +1012,12 @@ void KLTTrackFeatures(
   for (i = 0 ; i < tc->nPyramidLevels ; i++)
     _KLTComputeGradients(pyramid2->img[i], tc->grad_sigma,
                          pyramid2_gradx->img[i], pyramid2_grady->img[i]);
+  
+#ifdef USE_CUDA
+  /* Ensure all pyramid preprocessing GPU work (from convolve_gpu.cu) is complete
+   * before proceeding to tracking. This is critical for accurate timing. */
+  cudaDeviceSynchronize();
+#endif
   
 #ifdef USE_CUDA
   /* OPTIMIZATION: Upload pyramids with pointer swapping for sequential mode */
@@ -1236,12 +1269,31 @@ void KLTTrackFeatures(
 #ifdef USE_CUDA
   }
   
-  /* Final synchronization - ensure all GPU work is complete */
+  /* ============= FINAL SYNCHRONIZATION BEFORE STOPPING TIMER ============= */
+  /* Ensure ALL GPU work across all streams is complete before stopping timer */
   if (g_pool.initialized) {
     for (int s = 0; s < NUM_STREAMS; s++) {
       cudaStreamSynchronize(g_pool.streams[s]);
     }
   }
+  
+  /* Also synchronize the convolve_gpu.cu stream and any other device work */
+  cudaDeviceSynchronize();
+  
+  /* ============= STOP GPU TIMING AND PRINT RESULT ============= */
+  cudaEventRecord(g_pool.timing_stop, 0);
+  cudaEventSynchronize(g_pool.timing_stop);
+  
+  float gpu_time_ms = 0.0f;
+  cudaEventElapsedTime(&gpu_time_ms, g_pool.timing_start, g_pool.timing_stop);
+  float gpu_time_sec = gpu_time_ms / 1000.0f;
+  
+  fprintf(stderr, "\n========================================\n");
+  fprintf(stderr, "GPU Execution Time: %.4f seconds\n", gpu_time_sec);
+  fprintf(stderr, "========================================\n");
+  fprintf(stderr, "NOTE: Time includes pyramid preprocessing\n");
+  fprintf(stderr, "      (smoothing + gradients) and tracking\n");
+  fprintf(stderr, "========================================\n");
 #endif
   
   if (tc->sequentialMode)  {
