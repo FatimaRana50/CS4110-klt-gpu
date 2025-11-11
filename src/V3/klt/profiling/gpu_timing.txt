@@ -1,0 +1,5 @@
+computeIntensityDifferenceOptimized 11.639
+gradientSumKernelShared 8.838
+ConvH_ZeroPad 0.272
+ConvV_ZeroPad 0.269
+computeMinEigenvaluesKernel 0.022

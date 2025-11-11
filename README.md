@@ -21,6 +21,7 @@ Run the following command inside src/V1/klt:
 ```bash
 make -f Makefile.example3 callgraph
 ```
+```
 
 This single command will:
 
@@ -69,6 +70,7 @@ Accelerate heavy functions (_convolveImageHoriz, _convolveImageVert, _interpolat
 Compare pre- and post-optimization profiles to quantify performance gains.
 
 📂 Directory Structure
+```
 ```
 CS4110-klt-gpu/
 │
@@ -144,3 +146,4 @@ Fatima Shakir
 Faateh Haneef
 Course: CS4110 – High Performance Computing
 Deliverable 1: Profiling & Hotspot Analysis of KLT Feature Tracker
+
