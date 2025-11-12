@@ -70,7 +70,7 @@ Accelerate heavy functions (_convolveImageHoriz, _convolveImageVert, _interpolat
 Compare pre- and post-optimization profiles to quantify performance gains.
 
 📂 Directory Structure
-```
+
 ```
 CS4110-klt-gpu/
 │
