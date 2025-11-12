@@ -138,6 +138,79 @@ make profile_gpu
 ```
 
 
+---
+
+## V3: Optimized GPU KLT Feature Tracker
+
+This version introduces **full GPU optimization** using advanced CUDA memory and concurrency techniques. Compared to V2, this version achieves **up to 6.47× speedup**, leveraging multiple GPU memory hierarchies and asynchronous execution.
+
+### 🚀 Key Optimizations
+- **Constant Memory** for frequently accessed parameters (fast read-only access).
+- **Texture Memory** for hardware-accelerated bilinear interpolation and spatial locality.
+- **Batched Feature Processing** to remove per-feature CPU–GPU transfer overhead.
+- **Pointer Swapping** for pyramid reuse, eliminating redundant memory uploads.
+- **Persistent Buffers** (host & device) to avoid repeated memory allocations.
+- **Multiple CUDA Streams** for asynchronous pyramid-level processing and improved GPU utilization.
+
+### 📊 Performance Results
+
+#### GPU Kernel Breakdown
+| GPU Operation | % of GPU Time | Execution Time (ms) |
+|----------------|---------------|---------------------|
+| Intensity Difference | 55.32% | 11.639 |
+| Gradient Sum | 42.01% | 8.838 |
+| Convolution | 2.67% | – |
+
+<p align="center"><img src="src/V3/klt/profiling/gpu_callgraph_from_timings.png" alt="GPU Kernel Execution Time Distribution" width="600"></p>
+<p align="center"><em>Figure: GPU Kernel Execution Time Distribution</em></p>
+
+#### Speedup Analysis (Clock & Program Time)
+
+| Dataset | Dataset Size | 150 Features | 500 Features | 1000 Features |
+|----------|---------------|---------------|----------------|----------------|
+| **Program Time Speedup** | | | | |
+| 10 (Sir) | 0.661× | 0.675× | 0.705× |
+| 45 (Shakir) | 1.767× | 1.853× | 2.010× |
+| 165 (Fatima) | 1.624× | 1.703× | 1.932× |
+| 284 (Masooma) | 1.574× | 1.849× | 1.866× |
+| **Clock Time Speedup** | | | | |
+| 10 (Sir) | 5.50× | 5.78× | 6.25× |
+| 45 (Shakir) | 5.95× | 6.02× | 6.16× |
+| 165 (Fatima) | 6.04× | 6.05× | 6.07× |
+| 284 (Masooma) | 6.09× | 6.15× | 6.47× |
+
+
+### 📈 Observations
+- GPU acceleration achieves **6.47× clock-based speedup** and **1.87× real-time speedup**.
+- Performance increases with higher feature counts due to effective batched parallelism.
+- Memory and stream optimizations reduce CPU–GPU synchronization and allocation overhead.
+
+### Compilation & Running
+
+All code is compiled using the provided Makefile:
+
+
+# Navigate to V2 directory
+
+```
+cd src/V3/klt
+```
+
+# Compile the GPU version
+
+```
+make -B
+```
+
+# Run the example and profile it to draw graph
+ ```
+./example3
+```
+
+### 🧠 Summary
+Version 3 delivers a **fully optimized GPU implementation** of KLT using CUDA streams and specialized memory spaces. This version forms the foundation for real-time, scalable computer vision applications.
+
+---
 
 👩‍💻 Contributors
 
@@ -145,5 +218,4 @@ Fatima Farrukh Rana
 Fatima Shakir
 Faateh Haneef
 Course: CS4110 – High Performance Computing
-Deliverable 1: Profiling & Hotspot Analysis of KLT Feature Tracker
 
