@@ -21,9 +21,7 @@ Run the following command inside src/V1/klt:
 ```bash
 make -f Makefile.example3 callgraph
 ```
-```
 
-```
 
 This single command will:
 
