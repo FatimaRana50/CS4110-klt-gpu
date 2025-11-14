@@ -43,7 +43,7 @@ int main()
   KLTSelectGoodFeatures(tc, img1, ncols, nrows, fl);
   KLTStoreFeatureList(fl, ft, 0);
   sprintf(fnameout, "feat_%04d.ppm", startFrame);
-  KLTWriteFeatureListToPPM(fl, img1, ncols, nrows, fnameout);
+  //KLTWriteFeatureListToPPM(fl, img1, ncols, nrows, fnameout);
 
   // Track through remaining frames
   for (i = 1, frame = startFrame + 1; frame <= endFrame; i++, frame++) {
@@ -58,7 +58,7 @@ int main()
 
     KLTStoreFeatureList(fl, ft, i);
     sprintf(fnameout, "feat_%04d.ppm", frame);
-    KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
+    //KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
   }
 
   // Write out results
