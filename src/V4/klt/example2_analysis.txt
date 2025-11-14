@@ -1,0 +1,348 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 50.00      0.02     0.02       15     1.33     1.33  _trackFeature
+ 50.00      0.04     0.02                             _am_compute6by1ErrorVector
+  0.00      0.04     0.00   174538     0.00     0.00  _am_compute4by1ErrorVector
+  0.00      0.04     0.00    52226     0.00     0.00  _am_compute6by6GradientMatrix
+  0.00      0.04     0.00      300     0.00     0.00  _am_trackFeatureAffine
+  0.00      0.04     0.00      200     0.00     0.00  _convolveImageVert
+  0.00      0.04     0.00      115     0.00     0.02  _am_gauss_jordan_elimination
+  0.00      0.04     0.00      105     0.00     0.00  _KLTComputeGradients
+  0.00      0.04     0.00       81     0.00     0.00  _KLTSelectGoodFeatures
+  0.00      0.04     0.00       17     0.00     0.00  _solveEquation
+  0.00      0.04     0.00       13     0.00     0.00  _computeGradientSumLightingInsensitive
+  0.00      0.04     0.00        8     0.00     0.00  KLTReplaceLostFeatures
+  0.00      0.04     0.00        3     0.00     0.00  KLTReadFeatureTable
+  0.00      0.04     0.00        2     0.00     0.00  KLTReadFeatureHistory
+  0.00      0.04     0.00        2     0.00     0.00  _KLTToFloatImage
+  0.00      0.04     0.00        2     0.00     0.00  _computeGradientSum
+  0.00      0.04     0.00        2     0.00     0.00  _computeIntensityDifferenceLightingInsensitive
+  0.00      0.04     0.00        2     0.00     0.00  _computeKernels
+  0.00      0.04     0.00        2     0.00     0.00  _enforceMinimumDistance
+  0.00      0.04     0.00        2     0.00     0.00  _interpolate
+  0.00      0.04     0.00        1     0.00     0.00  _KLTPrintSubFloatImage
+  0.00      0.04     0.00        1     0.00     2.34  _am_compute4by4GradientMatrix
+  0.00      0.04     0.00        1     0.00     0.00  _am_getGradientWinAffine
+  0.00      0.04     0.00        1     0.00     0.00  pgmRead
+  0.00      0.04     0.00        1     0.00     0.00  pgmReadHeaderFile
+  0.00      0.04     0.00        1     0.00     0.00  ppmWrite
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 25.00% of 0.04 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     56.7    0.02    0.00                 _am_compute6by1ErrorVector [1]
+                0.00    0.00       2/15          _trackFeature [2]
+                0.00    0.00       2/81          _KLTSelectGoodFeatures [56]
+                0.00    0.00       1/13          _computeGradientSumLightingInsensitive [58]
+-----------------------------------------------
+                                  25             _trackFeature [2]
+                0.00    0.00       1/15          _printSetupTxt [10]
+                0.00    0.00       2/15          _am_gauss_jordan_elimination [5]
+                0.00    0.00       2/15          _am_compute6by1ErrorVector [1]
+                0.00    0.00       2/15          _printSetupBin [6]
+                0.00    0.00       3/15          KLTWriteFeatureListToPPM [4]
+                0.01    0.00       5/15          _outOfBounds [3]
+[2]     50.0    0.02    0.00      15+25      _trackFeature [2]
+                0.00    0.00      30/81          _KLTSelectGoodFeatures [56]
+                0.00    0.00      15/17          _solveEquation [57]
+                0.00    0.00       3/13          _computeGradientSumLightingInsensitive [58]
+                                  25             _trackFeature [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     16.7    0.00    0.01                 _outOfBounds [3]
+                0.01    0.00       5/15          _trackFeature [2]
+                0.00    0.00       5/13          _computeGradientSumLightingInsensitive [58]
+-----------------------------------------------
+                                                 <spontaneous>
+[4]     10.2    0.00    0.00                 KLTWriteFeatureListToPPM [4]
+                0.00    0.00       3/15          _trackFeature [2]
+                0.00    0.00       4/115         _am_gauss_jordan_elimination [5]
+                0.00    0.00       3/81          _KLTSelectGoodFeatures [56]
+                0.00    0.00       2/13          _computeGradientSumLightingInsensitive [58]
+-----------------------------------------------
+                               31207             _am_gauss_jordan_elimination [5]
+                0.00    0.00       4/115         KLTWriteFeatureListToPPM [4]
+                0.00    0.00       4/115         _printSetupTxt [10]
+                0.00    0.00       6/115         KLTReadFeatureList [11]
+                0.00    0.00     101/115         _am_compute6by6GradientMatrix [7]
+[5]      6.7    0.00    0.00     115+31207   _am_gauss_jordan_elimination [5]
+                0.00    0.00       2/15          _trackFeature [2]
+                0.00    0.00      28/81          _KLTSelectGoodFeatures [56]
+                               31207             _am_gauss_jordan_elimination [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]      6.7    0.00    0.00                 _printSetupBin [6]
+                0.00    0.00       2/15          _trackFeature [2]
+-----------------------------------------------
+                0.00    0.00   52226/52226       _am_compute4by4GradientMatrix [8]
+[7]      5.9    0.00    0.00   52226         _am_compute6by6GradientMatrix [7]
+                0.00    0.00     101/115         _am_gauss_jordan_elimination [5]
+                0.00    0.00       4/81          _KLTSelectGoodFeatures [56]
+-----------------------------------------------
+                0.00    0.00       1/1           _getNextString [9]
+[8]      5.9    0.00    0.00       1         _am_compute4by4GradientMatrix [8]
+                0.00    0.00   52226/52226       _am_compute6by6GradientMatrix [7]
+                0.00    0.00       4/81          _KLTSelectGoodFeatures [56]
+                0.00    0.00       1/1           _am_getGradientWinAffine [66]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]      5.9    0.00    0.00                 _getNextString [9]
+                0.00    0.00       1/1           _am_compute4by4GradientMatrix [8]
+                0.00    0.00       2/2           _computeGradientSum [60]
+                0.00    0.00       1/1           pgmRead [15]
+-----------------------------------------------
+                                                 <spontaneous>
+[10]     3.6    0.00    0.00                 _printSetupTxt [10]
+                0.00    0.00       1/15          _trackFeature [2]
+                0.00    0.00       4/115         _am_gauss_jordan_elimination [5]
+                0.00    0.00       1/81          _KLTSelectGoodFeatures [56]
+-----------------------------------------------
+                                                 <spontaneous>
+[11]     0.3    0.00    0.00                 KLTReadFeatureList [11]
+                0.00    0.00       6/115         _am_gauss_jordan_elimination [5]
+                0.00    0.00       4/81          _KLTSelectGoodFeatures [56]
+-----------------------------------------------
+                                   2             KLTReplaceLostFeatures [12]
+                0.00    0.00       8/8           _interpolate [64]
+[12]     0.0    0.00    0.00       8+2       KLTReplaceLostFeatures [12]
+                                   2             KLTReplaceLostFeatures [12]
+-----------------------------------------------
+                0.00    0.00       1/3           KLTError [24]
+                0.00    0.00       2/3           _KLTComputeSmoothedImage [69]
+[13]     0.0    0.00    0.00       3         KLTReadFeatureTable [13]
+                0.00    0.00       2/2           _computeIntensityDifferenceLightingInsensitive [61]
+-----------------------------------------------
+                0.00    0.00       2/2           pnmReadHeader [47]
+[14]     0.0    0.00    0.00       2         KLTReadFeatureHistory [14]
+                0.00    0.00       2/81          _KLTSelectGoodFeatures [56]
+-----------------------------------------------
+                0.00    0.00       1/1           _getNextString [9]
+[15]     0.0    0.00    0.00       1         pgmRead [15]
+                0.00    0.00       2/2           _enforceMinimumDistance [63]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_dtors_aux [77]
+[16]     0.0    0.00    0.00       1         pgmReadHeaderFile [16]
+-----------------------------------------------
+                0.00    0.00       1/1           frame_dummy [41]
+[17]     0.0    0.00    0.00       1         ppmWrite [17]
+-----------------------------------------------
+                0.00    0.00  174538/174538      _am_trackFeatureAffine [53]
+[52]     0.0    0.00    0.00  174538         _am_compute4by1ErrorVector [52]
+-----------------------------------------------
+                                3635             _am_trackFeatureAffine [53]
+                0.00    0.00     100/300         _printFeatureTxt [97]
+                0.00    0.00     200/300         _printHeader [98]
+[53]     0.0    0.00    0.00     300+3635    _am_trackFeatureAffine [53]
+                0.00    0.00  174538/174538      _am_compute4by1ErrorVector [52]
+                                3635             _am_trackFeatureAffine [53]
+-----------------------------------------------
+                0.00    0.00     200/200         KLTError [24]
+[54]     0.0    0.00    0.00     200         _convolveImageVert [54]
+-----------------------------------------------
+                0.00    0.00       1/105         pnmReadHeader [47]
+                0.00    0.00       2/105         pgmReadHeader [44]
+                0.00    0.00     102/105         KLTError [24]
+[55]     0.0    0.00    0.00     105         _KLTComputeGradients [55]
+-----------------------------------------------
+                0.00    0.00       1/81          _enforceMinimumDistance [63]
+                0.00    0.00       1/81          _KLTWriteFloatImageToPGM [76]
+                0.00    0.00       1/81          _KLTWriteAbsFloatImageToPGM [75]
+                0.00    0.00       1/81          _printSetupTxt [10]
+                0.00    0.00       2/81          _am_compute6by1ErrorVector [1]
+                0.00    0.00       2/81          KLTReadFeatureHistory [14]
+                0.00    0.00       3/81          KLTWriteFeatureListToPPM [4]
+                0.00    0.00       4/81          _am_compute6by6GradientMatrix [7]
+                0.00    0.00       4/81          _am_compute4by4GradientMatrix [8]
+                0.00    0.00       4/81          KLTReadFeatureList [11]
+                0.00    0.00      28/81          _am_gauss_jordan_elimination [5]
+                0.00    0.00      30/81          _trackFeature [2]
+[56]     0.0    0.00    0.00      81         _KLTSelectGoodFeatures [56]
+-----------------------------------------------
+                0.00    0.00       2/17          _enforceMinimumDistance [63]
+                0.00    0.00      15/17          _trackFeature [2]
+[57]     0.0    0.00    0.00      17         _solveEquation [57]
+                0.00    0.00       2/13          _computeGradientSumLightingInsensitive [58]
+-----------------------------------------------
+                0.00    0.00       1/13          _am_compute6by1ErrorVector [1]
+                0.00    0.00       2/13          _solveEquation [57]
+                0.00    0.00       2/13          KLTWriteFeatureListToPPM [4]
+                0.00    0.00       3/13          _trackFeature [2]
+                0.00    0.00       5/13          _outOfBounds [3]
+[58]     0.0    0.00    0.00      13         _computeGradientSumLightingInsensitive [58]
+-----------------------------------------------
+                0.00    0.00       2/2           _convolveImageHoriz [87]
+[59]     0.0    0.00    0.00       2         _KLTToFloatImage [59]
+-----------------------------------------------
+                                   2             _computeGradientSum [60]
+                0.00    0.00       2/2           _getNextString [9]
+[60]     0.0    0.00    0.00       2+2       _computeGradientSum [60]
+                0.00    0.00       2/2           _interpolate [64]
+                                   2             _computeGradientSum [60]
+-----------------------------------------------
+                                   2             _computeIntensityDifferenceLightingInsensitive [61]
+                0.00    0.00       2/2           KLTReadFeatureTable [13]
+[61]     0.0    0.00    0.00       2+2       _computeIntensityDifferenceLightingInsensitive [61]
+                                   2             _computeIntensityDifferenceLightingInsensitive [61]
+-----------------------------------------------
+                                  12             _computeKernels [62]
+                0.00    0.00       2/2           _KLTComputeSmoothedImage [69]
+[62]     0.0    0.00    0.00       2+12      _computeKernels [62]
+                                  12             _computeKernels [62]
+-----------------------------------------------
+                                   1             _enforceMinimumDistance [63]
+                0.00    0.00       2/2           pgmRead [15]
+[63]     0.0    0.00    0.00       2+1       _enforceMinimumDistance [63]
+                0.00    0.00       2/17          _solveEquation [57]
+                0.00    0.00       1/81          _KLTSelectGoodFeatures [56]
+                                   1             _enforceMinimumDistance [63]
+-----------------------------------------------
+                0.00    0.00       2/2           _computeGradientSum [60]
+[64]     0.0    0.00    0.00       2         _interpolate [64]
+                0.00    0.00       8/8           KLTReplaceLostFeatures [12]
+-----------------------------------------------
+                0.00    0.00       1/1           pnmReadHeader [47]
+[65]     0.0    0.00    0.00       1         _KLTPrintSubFloatImage [65]
+-----------------------------------------------
+                0.00    0.00       1/1           _am_compute4by4GradientMatrix [8]
+[66]     0.0    0.00    0.00       1         _am_getGradientWinAffine [66]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [14] KLTReadFeatureHistory   [1] _am_compute6by1ErrorVector [54] _convolveImageVert
+  [13] KLTReadFeatureTable     [7] _am_compute6by6GradientMatrix [63] _enforceMinimumDistance
+  [12] KLTReplaceLostFeatures  [5] _am_gauss_jordan_elimination [64] _interpolate
+  [55] _KLTComputeGradients   [66] _am_getGradientWinAffine [57] _solveEquation
+  [65] _KLTPrintSubFloatImage [53] _am_trackFeatureAffine  [2] _trackFeature
+  [56] _KLTSelectGoodFeatures [60] _computeGradientSum    [15] pgmRead
+  [59] _KLTToFloatImage       [58] _computeGradientSumLightingInsensitive [16] pgmReadHeaderFile
+  [52] _am_compute4by1ErrorVector [61] _computeIntensityDifferenceLightingInsensitive [17] ppmWrite
+   [8] _am_compute4by4GradientMatrix [62] _computeKernels
