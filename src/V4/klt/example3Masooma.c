@@ -5,6 +5,7 @@ next images in the dataset (frame_000320.pgm to frame_000600.pgm).
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>     // <-- added for timing
 #include "pnmio.h"
 #include "klt.h"
 
@@ -21,7 +22,7 @@ int main()
   KLT_TrackingContext tc;
   KLT_FeatureList fl;
   KLT_FeatureTable ft;
-  int nFeatures = 1000;
+  int nFeatures = 150;
   int startFrame = 320, endFrame = 600;
   int nFrames = endFrame - startFrame + 1;
   int ncols, nrows;
@@ -38,6 +39,12 @@ int main()
   sprintf(fnamein, "images2/frame_%06d.pgm", startFrame);
   img1 = pgmReadFile(fnamein, NULL, &ncols, &nrows);
   img2 = (unsigned char *) malloc(ncols * nrows * sizeof(unsigned char));
+
+  /* ===============================
+        START TIMING BEFORE WORK
+     =============================== */
+  clock_t start_clock = clock();
+  /* =============================== */
 
   // Select good features in the first frame
   KLTSelectGoodFeatures(tc, img1, ncols, nrows, fl);
@@ -61,7 +68,15 @@ int main()
     KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
   }
 
-  // Write out results
+  /* ===============================
+         END TIMING BEFORE WRITING
+     =============================== */
+  clock_t end_clock = clock();
+  double total_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
+  printf("\n[CPU] Feature selection + tracking runtime: %.3f s\n", total_time);
+  /* =============================== */
+
+  // Write out results (NOT included in timing)
   KLTWriteFeatureTable(ft, "features.txt", "%5.1f");
   KLTWriteFeatureTable(ft, "features.ft", NULL);
 

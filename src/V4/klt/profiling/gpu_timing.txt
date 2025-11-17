@@ -1,0 +1,128 @@
+
+NOTICE: Existing SQLite export found: report.sqlite
+        It is assumed file was previously exported from: report.nsys-rep
+        Consider using --force-export=true if needed.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/nvtx_sum.py]... 
+SKIPPED: report.sqlite does not contain NV Tools Extension (NVTX) data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/osrt_sum.py]... 
+
+ ** OS Runtime Summary (osrt_sum):
+
+ Time (%)  Total Time (ns)  Num Calls    Avg (ns)       Med (ns)      Min (ns)     Max (ns)    StdDev (ns)            Name         
+ --------  ---------------  ---------  -------------  -------------  -----------  -----------  ------------  ----------------------
+     64.1   11,089,425,029        577   19,219,107.5   10,058,003.0      241,512  100,152,680  27,376,525.7  poll                  
+     34.7    6,000,945,801         12  500,078,816.8  500,082,085.0  500,051,429  500,119,103      18,733.8  pthread_cond_timedwait
+      0.6       96,616,853        458      210,953.8        7,451.0        1,126   11,220,603     749,463.8  ioctl                 
+      0.4       73,057,367     33,109        2,206.6        1,334.0        1,050    3,352,215      18,569.6  fputc                 
+      0.1       14,053,113        118      119,094.2        1,450.5        1,003      571,787     158,651.8  fclose                
+      0.1       12,192,209        125       97,537.7        4,326.0        1,049      331,686     127,074.6  fopen                 
+      0.0        1,386,753        292        4,749.2        1,273.0        1,000      157,960      13,303.4  fread                 
+      0.0        1,149,016         25       45,960.6        5,796.0        3,782      733,628     145,607.7  mmap64                
+      0.0          506,551          9       56,283.4       46,153.0        8,421      220,821      64,726.4  sem_timedwait         
+      0.0          163,588         43        3,804.4        3,255.0        1,353        8,637       1,548.1  open64                
+      0.0          143,439         65        2,206.8        1,355.0        1,120        5,862       1,351.8  fwrite                
+      0.0          130,013         17        7,647.8        4,885.0        1,548       43,043       9,553.3  mmap                  
+      0.0          110,174          3       36,724.7       41,016.0       26,621       42,537       8,783.0  pthread_create        
+      0.0          109,277          1      109,277.0      109,277.0      109,277      109,277           0.0  pthread_cond_wait     
+      0.0           28,052          1       28,052.0       28,052.0       28,052       28,052           0.0  fgets                 
+      0.0           25,839          5        5,167.8        4,483.0        2,689        8,777       2,275.1  munmap                
+      0.0           16,536          5        3,307.2        3,603.0        1,726        4,771       1,152.2  open                  
+      0.0           11,402          5        2,280.4        2,436.0        1,021        3,373         947.7  close                 
+      0.0           10,517          3        3,505.7        3,867.0        1,724        4,926       1,631.3  pipe2                 
+      0.0           10,185          8        1,273.1        1,231.0        1,027        1,652         217.9  write                 
+      0.0            9,865          2        4,932.5        4,932.5        3,341        6,524       2,250.7  socket                
+      0.0            6,331          1        6,331.0        6,331.0        6,331        6,331           0.0  connect               
+      0.0            5,919          4        1,479.8        1,362.5        1,054        2,140         513.5  read                  
+      0.0            1,566          1        1,566.0        1,566.0        1,566        1,566           0.0  pthread_cond_broadcast
+      0.0            1,404          1        1,404.0        1,404.0        1,404        1,404           0.0  bind                  
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/cuda_api_sum.py]... 
+
+ ** CUDA API Summary (cuda_api_sum):
+
+ Time (%)  Total Time (ns)  Num Calls  Avg (ns)   Med (ns)   Min (ns)   Max (ns)   StdDev (ns)          Name        
+ --------  ---------------  ---------  ---------  ---------  --------  ----------  -----------  --------------------
+     97.7      320,488,890      1,158  276,760.7   28,913.0       920  35,141,167  1,108,472.5  cuStreamSynchronize 
+      1.0        3,395,445        579    5,864.3    5,202.0     3,198      21,550      2,356.6  cuLaunchKernel      
+      1.0        3,139,881        534    5,879.9    4,851.0     2,472      27,991      3,538.3  cuMemcpyHtoDAsync_v2
+      0.2          658,462          1  658,462.0  658,462.0   658,462     658,462          0.0  cuMemAllocHost_v2   
+      0.1          170,808          1  170,808.0  170,808.0   170,808     170,808          0.0  cuModuleLoadDataEx  
+      0.0          102,450          2   51,225.0   51,225.0     9,540      92,910     58,951.5  cuMemAlloc_v2       
+      0.0           37,510          1   37,510.0   37,510.0    37,510      37,510          0.0  cuMemAllocManaged   
+      0.0            1,458          3      486.0      282.0       122       1,054        498.4  cuCtxSetCurrent     
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+
+ ** CUDA GPU Kernel Summary (cuda_gpu_kern_sum):
+
+ Time (%)  Total Time (ns)  Instances    Avg (ns)      Med (ns)     Min (ns)    Max (ns)   StdDev (ns)                           Name                         
+ --------  ---------------  ---------  ------------  ------------  ----------  ----------  -----------  ------------------------------------------------------
+     63.2      199,795,752        267     748,298.7     792,180.0      36,287   2,136,702    587,256.0  _10convolve_c__convolveImageHoriz_176_gpu             
+     22.5       71,129,091        267     266,401.1     200,413.0      49,279   1,024,880    182,613.5  _10convolve_c__convolveImageVert_246_gpu              
+     11.1       35,135,960          1  35,135,960.0  35,135,960.0  35,135,960  35,135,960          0.0  _20selectGoodFeatures_c__KLTSelectGoodFeatures_261_gpu
+      3.1        9,876,424         44     224,464.2     178,253.5      48,576     653,782    172,942.5  _9pyramid_c__KLTComputePyramid_154_gpu                
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/cuda_gpu_mem_time_sum.py]... 
+
+ ** CUDA GPU MemOps Summary (by Time) (cuda_gpu_mem_time_sum):
+
+ Time (%)  Total Time (ns)  Count   Avg (ns)  Med (ns)  Min (ns)  Max (ns)  StdDev (ns)               Operation              
+ --------  ---------------  ------  --------  --------  --------  --------  -----------  ------------------------------------
+     61.0      131,709,444  27,884   4,723.5   3,103.0     1,375    88,415      6,808.5  [CUDA memcpy Unified Host-to-Device]
+     38.9       84,065,368  10,982   7,654.8   1,919.0     1,087   122,078     14,868.4  [CUDA memcpy Unified Device-to-Host]
+      0.1          237,817     534     445.4     448.0       415       576         19.3  [CUDA memcpy Host-to-Device]        
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/cuda_gpu_mem_size_sum.py]... 
+
+ ** CUDA GPU MemOps Summary (by Size) (cuda_gpu_mem_size_sum):
+
+ Total (MB)  Count   Avg (MB)  Med (MB)  Min (MB)  Max (MB)  StdDev (MB)               Operation              
+ ----------  ------  --------  --------  --------  --------  -----------  ------------------------------------
+    799.003  10,982     0.073     0.004     0.004     1.044        0.170  [CUDA memcpy Unified Device-to-Host]
+    796.865  27,884     0.029     0.008     0.004     1.040        0.086  [CUDA memcpy Unified Host-to-Device]
+      0.154     534     0.000     0.000     0.000     0.000        0.000  [CUDA memcpy Host-to-Device]        
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/openmp_sum.py]... 
+SKIPPED: report.sqlite does not contain OpenMP event data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/opengl_khr_range_sum.py]... 
+SKIPPED: report.sqlite does not contain KHR Extension (KHR_DEBUG) data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/opengl_khr_gpu_range_sum.py]... 
+SKIPPED: report.sqlite does not contain GPU KHR Extension (KHR_DEBUG) data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/vulkan_marker_sum.py]... 
+SKIPPED: report.sqlite does not contain Vulkan Debug Extension (Vulkan Debug Util) data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/vulkan_gpu_marker_sum.py]... 
+SKIPPED: report.sqlite does not contain GPU Vulkan Debug Extension (GPU Vulkan Debug markers) data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/dx11_pix_sum.py]... 
+SKIPPED: report.sqlite does not contain DX11 CPU debug markers.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/dx12_gpu_marker_sum.py]... 
+SKIPPED: report.sqlite does not contain DX12 GPU debug markers.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/dx12_pix_sum.py]... 
+SKIPPED: report.sqlite does not contain DX12 CPU debug markers.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/wddm_queue_sum.py]... 
+SKIPPED: report.sqlite does not contain WDDM context data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/um_sum.py]... 
+SKIPPED: report.sqlite does not contain CUDA Unified Memory CPU page faults data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/um_total_sum.py]... 
+SKIPPED: report.sqlite does not contain CUDA Unified Memory CPU page faults data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/um_cpu_page_faults_sum.py]... 
+SKIPPED: report.sqlite does not contain CUDA Unified Memory CPU page faults data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/openacc_sum.py]... 
+SKIPPED: report.sqlite does not contain OpenACC event data.
+
+Processing [report.sqlite] with [/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/profilers/13.0/Nsight_Systems/host-linux-x64/reports/syscall_sum.py]... 
+SKIPPED: report.sqlite does not contain syscall data.
+

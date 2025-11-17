@@ -1230,7 +1230,6 @@ static int _am_trackFeatureAffine(
  *
  * Tracks feature points from one image to the next.
  */
-
 void KLTTrackFeatures(
 					  KLT_TrackingContext tc,
 					  KLT_PixelType *img1,
@@ -1280,8 +1279,7 @@ void KLTTrackFeatures(
 	/* Create temporary image */
 	tmpimg = _KLTCreateFloatImage(ncols, nrows);
 
-	/* Process first image by converting to float, smoothing, computing */
-	/* pyramid, and computing gradient pyramids */
+	/* Process first image by converting to float, smoothing, computing pyramid, and gradients */
 	if (tc->sequentialMode && tc->pyramid_last != NULL)  {
 		pyramid1 = (_KLT_Pyramid) tc->pyramid_last;
 		pyramid1_gradx = (_KLT_Pyramid) tc->pyramid_last_gradx;
@@ -1307,7 +1305,7 @@ void KLTTrackFeatures(
 			pyramid1_grady->img[i]);
 	}
 
-	/* Do the same thing with second image */
+	/* Second image */
 	floatimg2 = _KLTCreateFloatImage(ncols, nrows);
 	_KLTToFloatImage(img2, ncols, nrows, tmpimg);
 	_KLTComputeSmoothedImage(tmpimg, _KLTComputeSmoothSigma(tc), floatimg2);
@@ -1339,27 +1337,26 @@ void KLTTrackFeatures(
 		}
 	}
 
-	/* For each feature, do ... */
+	/* For each feature */
 	for (indx = 0 ; indx < featurelist->nFeatures ; indx++)  {
 
-		/* Only track features that are not lost */
 		if (featurelist->feature[indx]->val >= 0)  {
 
 			xloc = featurelist->feature[indx]->x;
 			yloc = featurelist->feature[indx]->y;
 
-			/* Transform location to coarsest resolution */
 			for (r = tc->nPyramidLevels - 1 ; r >= 0 ; r--)  {
-				xloc /= subsampling;  yloc /= subsampling;
+				xloc /= subsampling;  
+				yloc /= subsampling;
 			}
-			xlocout = xloc;  ylocout = yloc;
+			xlocout = xloc;  
+			ylocout = yloc;
 
-			/* Beginning with coarsest resolution, do ... */
 			for (r = tc->nPyramidLevels - 1 ; r >= 0 ; r--)  {
-
-				/* Track feature at current resolution */
-				xloc *= subsampling;  yloc *= subsampling;
-				xlocout *= subsampling;  ylocout *= subsampling;
+				xloc *= subsampling;  
+				yloc *= subsampling;
+				xlocout *= subsampling;  
+				ylocout *= subsampling;
 
 				val = _trackFeature(xloc, yloc, 
 					&xlocout, &ylocout,
@@ -1435,15 +1432,11 @@ void KLTTrackFeatures(
 				featurelist->feature[indx]->x = xlocout;
 				featurelist->feature[indx]->y = ylocout;
 				featurelist->feature[indx]->val = KLT_TRACKED;
-				if (tc->affineConsistencyCheck >= 0 && val == KLT_TRACKED)  { /*for affine mapping*/
-					int border = 2; /* add border for interpolation */
 
-#ifdef DEBUG_AFFINE_MAPPING	  
-					glob_index = indx;
-#endif
+				if (tc->affineConsistencyCheck >= 0 && val == KLT_TRACKED)  { 
+					int border = 2;
 
 					if(!featurelist->feature[indx]->aff_img){
-						/* save image and gradient for each feature at finest resolution after first successful track */
 						featurelist->feature[indx]->aff_img = _KLTCreateFloatImage((tc->affine_window_width+border), (tc->affine_window_height+border));
 						featurelist->feature[indx]->aff_img_gradx = _KLTCreateFloatImage((tc->affine_window_width+border), (tc->affine_window_height+border));
 						featurelist->feature[indx]->aff_img_grady = _KLTCreateFloatImage((tc->affine_window_width+border), (tc->affine_window_height+border));
@@ -1453,7 +1446,6 @@ void KLTTrackFeatures(
 						featurelist->feature[indx]->aff_x = xloc - (int) xloc + (tc->affine_window_width+border)/2;
 						featurelist->feature[indx]->aff_y = yloc - (int) yloc + (tc->affine_window_height+border)/2;;
 					}else{
-						/* affine tracking */
 						val = _am_trackFeatureAffine(featurelist->feature[indx]->aff_x, featurelist->feature[indx]->aff_y,
 							&xlocout, &ylocout,
 							featurelist->feature[indx]->aff_img, 
@@ -1476,22 +1468,21 @@ void KLTTrackFeatures(
 							&featurelist->feature[indx]->aff_Axy,
 							&featurelist->feature[indx]->aff_Ayy 
 							);
+
 						featurelist->feature[indx]->val = val;
+
 						if(val != KLT_TRACKED){
 							featurelist->feature[indx]->x   = -1.0;
 							featurelist->feature[indx]->y   = -1.0;
 							featurelist->feature[indx]->aff_x = -1.0;
 							featurelist->feature[indx]->aff_y = -1.0;
-							/* free image and gradient for lost feature */
+
 							_KLTFreeFloatImage(featurelist->feature[indx]->aff_img);
 							_KLTFreeFloatImage(featurelist->feature[indx]->aff_img_gradx);
 							_KLTFreeFloatImage(featurelist->feature[indx]->aff_img_grady);
 							featurelist->feature[indx]->aff_img = NULL;
 							featurelist->feature[indx]->aff_img_gradx = NULL;
 							featurelist->feature[indx]->aff_img_grady = NULL;
-						}else{
-							/*featurelist->feature[indx]->x = xlocout;*/
-							/*featurelist->feature[indx]->y = ylocout;*/
 						}
 					}
 				}
@@ -1525,7 +1516,5 @@ void KLTTrackFeatures(
 			fprintf(stderr,  "\tWrote images to 'kltimg_tf*.pgm'.\n");
 		fflush(stderr);
 	}
-
 }
-
 

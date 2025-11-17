@@ -7,6 +7,7 @@ saved to a text file; each feature list is also written to a PPM file.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>          // <-- added for timing
 #include "pnmio.h"
 #include "klt.h"
 
@@ -23,7 +24,7 @@ int main()
   KLT_TrackingContext tc;
   KLT_FeatureList fl;
   KLT_FeatureTable ft;
-  int nFeatures = 1000, nFrames = 10;
+  int nFeatures = 150, nFrames = 10;
   int ncols, nrows;
   int i;
 
@@ -37,9 +38,15 @@ int main()
   img1 = pgmReadFile("images/img0.pgm", NULL, &ncols, &nrows);
   img2 = (unsigned char *) malloc(ncols*nrows*sizeof(unsigned char));
 
+  // ============================
+  // START TIMING BEFORE KERNELS
+  // ============================
+  clock_t start_clock = clock();
+  // ============================
+
   KLTSelectGoodFeatures(tc, img1, ncols, nrows, fl);
   KLTStoreFeatureList(fl, ft, 0);
-  KLTWriteFeatureListToPPM(fl, img1, ncols, nrows, "feat0.ppm");
+  //KLTWriteFeatureListToPPM(fl, img1, ncols, nrows, "feat0.ppm");
 
   for (i = 1 ; i < nFrames ; i++)  {
     sprintf(fnamein, "images/img%d.pgm", i);
@@ -50,8 +57,18 @@ int main()
 #endif
     KLTStoreFeatureList(fl, ft, i);
     sprintf(fnameout, "feat%d.ppm", i);
-    KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
+    //KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
   }
+
+  // ============================
+  // END TIMING BEFORE ANY WRITE
+  // ============================
+  clock_t end_clock = clock();
+  double total_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
+  printf("\n[CPU] Feature selection + tracking runtime: %.3f s\n", total_time);
+  // ============================
+
+  // Writing begins AFTER timing
   KLTWriteFeatureTable(ft, "features.txt", "%5.1f");
   KLTWriteFeatureTable(ft, "features.ft", NULL);
 

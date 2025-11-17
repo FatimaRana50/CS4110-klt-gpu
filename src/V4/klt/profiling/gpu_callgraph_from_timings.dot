@@ -1,0 +1,11 @@
+digraph G {
+  rankdir=TB;
+  node [shape=box, style=filled, fontname="Helvetica"];
+  "_10convolve_c__convolveImageHoriz_176_gpu" [label="_10convolve_c__convolveImageHoriz_176_gpu\n63.24%\n(199.796 ms)", fillcolor="#d62728", fontcolor="#fff", fontsize=18];
+  "_10convolve_c__convolveImageVert_246_gpu" [label="_10convolve_c__convolveImageVert_246_gpu\n22.51%\n(71.129 ms)", fillcolor="#2ca02c", fontsize=12];
+  "_20selectGoodFeatures_c__KLTSelectGoodFeatures_261_gpu" [label="_20selectGoodFeatures_c__KLTSelectGoodFeatures_261_gpu\n11.12%\n(35.136 ms)", fillcolor="#2ca02c", fontsize=12];
+  "_9pyramid_c__KLTComputePyramid_154_gpu" [label="_9pyramid_c__KLTComputePyramid_154_gpu\n3.13%\n(9.876 ms)", fillcolor="#17a2b8", fontsize=11];
+  "_10convolve_c__convolveImageHoriz_176_gpu" -> "_10convolve_c__convolveImageVert_246_gpu" [label="22.51%", penwidth=4.50];
+  "_10convolve_c__convolveImageHoriz_176_gpu" -> "_20selectGoodFeatures_c__KLTSelectGoodFeatures_261_gpu" [label="11.12%", penwidth=2.22];
+  "_10convolve_c__convolveImageHoriz_176_gpu" -> "_9pyramid_c__KLTComputePyramid_154_gpu" [label="3.13%", penwidth=1.00];
+}

@@ -44,33 +44,3 @@
 #define min3(a,b,c) ((a) < (b) ? std::min((a),(c)) : std::min((b),(c)))
 
 #endif
-
-/* COPY ENTIRE FILE FROM V1, THEN ADD AT THE END: */
-
-/*********************************************************************
- * OpenACC Configuration
- *********************************************************************/
-
-#ifdef _OPENACC
-  #include <openacc.h>
-  #define KLT_USE_OPENACC 1
-#else
-  #define KLT_USE_OPENACC 0
-#endif
-
-/* OpenACC utility macros */
-#ifdef _OPENACC
-  #define KLT_ACC_PARALLEL_LOOP _Pragma("acc parallel loop")
-  #define KLT_ACC_DATA_COPYIN(ptr, size) _Pragma("acc data copyin(ptr[0:size])")
-  #define KLT_ACC_UPDATE_HOST(ptr, size) _Pragma("acc update host(ptr[0:size])")
-  #define KLT_ACC_UPDATE_DEVICE(ptr, size) _Pragma("acc update device(ptr[0:size])")
-#else
-  #define KLT_ACC_PARALLEL_LOOP
-  #define KLT_ACC_DATA_COPYIN(ptr, size)
-  #define KLT_ACC_UPDATE_HOST(ptr, size)
-  #define KLT_ACC_UPDATE_DEVICE(ptr, size)
-#endif
-
-/* Performance tuning constants */
-#define KLT_ACC_VECTOR_LENGTH 256
-#define KLT_ACC_GANG_SIZE 32

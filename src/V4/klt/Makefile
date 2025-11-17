@@ -4,14 +4,14 @@
 
 # OpenACC compiler configuration (NVIDIA HPC SDK)
 CC_ACC      = nvc
-CFLAGS_ACC  = -acc -gpu=managed -Minfo=accel -fast -O3
+CFLAGS_ACC  = -acc -gpu=mem:managed -Minfo=accel -fast -O3
 LIBS        = -lm
 
 # Sources
 SRC = klt.c klt_util.c pnmio.c convolve.c error.c pyramid.c \
       selectGoodFeatures.c trackFeatures.c writeFeatures.c storeFeatures.c
 
-TARGET      = example3Masooma
+TARGET      = example3shakir
 PROF_DIR    = profiling
 OUTPUT_FILE = run_output.txt
 
@@ -26,6 +26,7 @@ $(TARGET): $(TARGET).c $(SRC)
 	$(CC_ACC) $(CFLAGS_ACC) $^ -o $@ $(LIBS)
 	@echo "✅ Build complete: $(TARGET)"
 	@echo ""
+	mkdir -p $(PROF_DIR)
 
 # Run and save output
 run: $(TARGET)
@@ -99,11 +100,13 @@ check-compile:
 	@grep -i "Generating" compile_check.log \
 	    || echo "⚠️ No OpenACC accelerator output found"
 	@rm -f compile_check.log
-
-# Clean
+	
+	
+# rm -rf $(PROF_DIR) - add this if you want to remove profiling directory on clean
 clean:
-	rm -f *.o *.ppm $(TARGET)
-	@echo "🧹 Cleaned all build files"
+	rm -f $(TARGET) $(TARGET)_cpu $(OUTPUT_FILE) *.o *.ppm *.pgm
+	@echo "🧹 Cleaned all build and image files"
+
 
 .PHONY: all run test-acc profile profile-quick cpu info \
         check-compile clean
