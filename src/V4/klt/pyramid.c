@@ -167,3 +167,4 @@ void _KLTComputePyramid(
     _KLTFreeFloatImage(tmpimg);
   }
 }
+

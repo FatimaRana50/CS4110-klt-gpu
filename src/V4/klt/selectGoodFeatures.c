@@ -238,95 +238,89 @@ void _KLTSelectGoodFeatures(
     _KLTWriteFloatImageToPGM(grady,   "kltimg_sgfrlf_gy.pgm");
   }
 
-  /* ===================== OPENACC COMPUTATION ===================== */
-  {
-    register float gx, gy, gxx, gxy, gyy;
-    register int xx, yy;
-    register int *ptr;
-    float val;
+/* ===================== OPENACC COMPUTATION ===================== */
+{
     unsigned int limit = 1;
-    int borderx = tc->borderx;
-    int bordery = tc->bordery;
-    int x, y, i;
-
-    if (borderx < window_hw)  borderx = window_hw;
-    if (bordery < window_hh)  bordery = window_hh;
-
-    for (i = 0 ; i < (int)sizeof(int) ; i++)  limit *= 256;
+    for (int i = 0 ; i < (int)sizeof(int) ; i++)  limit *= 256;
     limit = limit/2 - 1;
 
-    /* Compute number of candidate positions (ny * nx) */
+    int borderx = tc->borderx < window_hw ? window_hw : tc->borderx;
+    int bordery = tc->bordery < window_hh ? window_hh : tc->bordery;
+
     const int step = tc->nSkippedPixels + 1;
-    int ny = (nrows - 2*bordery) / step;
+
     int nx = (ncols - 2*borderx) / step;
-    int total_points = ny * nx;
+    int ny = (nrows - 2*bordery) / step;
+    int total_points = nx * ny;
 
     if (total_points <= 0) {
-      /* No valid points – fall back to empty list */
-      npoints = 0;
+        npoints = 0;
     } else {
-      /* Temporary arrays to hold GPU results */
-      int   *temp_x   = (int *)   malloc(total_points * sizeof(int));
-      int   *temp_y   = (int *)   malloc(total_points * sizeof(int));
-      int   *temp_val = (int *)   malloc(total_points * sizeof(int));
-      float *gradx_data = gradx->data;
-      float *grady_data = grady->data;
 
-      /* OpenACC data region + parallel loop */
-      #pragma acc data copyin(gradx_data[0:ncols*nrows], \
-                              grady_data[0:ncols*nrows]) \
-                       copyout(temp_x[0:total_points], \
-                               temp_y[0:total_points], \
-                               temp_val[0:total_points])
-      {
-        #pragma acc parallel loop collapse(2) gang vector \
-                             private(gxx,gxy,gyy,val,xx,yy,gx,gy)
-        for (y = bordery ; y < nrows - bordery ; y += step) {
-          for (x = borderx ; x < ncols - borderx ; x += step) {
+        float *gx_img = gradx->data;
+        float *gy_img = grady->data;
 
-            gxx = 0.0f; gxy = 0.0f; gyy = 0.0f;
+        /* 
+         * Optimized OpenACC kernel:
+         * - loops over candidate indices (iy,ix)
+         * - eliminates divisions
+         * - precomputes window boundaries
+         * - precomputes row-base offsets
+         * - keeps accumulation order identical
+         */
 
-            #pragma acc loop seq reduction(+:gxx,gxy,gyy)
-            for (yy = y-window_hh ; yy <= y+window_hh ; yy++) {
-              #pragma acc loop seq
-              for (xx = x-window_hw ; xx <= x+window_hw ; xx++) {
-                gx = gradx_data[ncols*yy + xx];
-                gy = grady_data[ncols*yy + xx];
-                gxx += gx * gx;
-                gxy += gx * gy;
-                gyy += gy * gy;
-              }
+        #pragma acc parallel loop collapse(2)
+        for (int iy = 0 ; iy < ny ; iy++) {
+            for (int ix = 0 ; ix < nx ; ix++) {
+
+                int x = borderx + ix * step;
+                int y = bordery + iy * step;
+
+                /* Precompute window bounds */
+                int x0 = x - window_hw;
+                int x1 = x + window_hw;
+                int y0 = y - window_hh;
+                int y1 = y + window_hh;
+
+                float gxx = 0.0f;
+                float gxy = 0.0f;
+                float gyy = 0.0f;
+
+                /* 
+                 * Math-preserved summation.
+                 * Using row_base avoids repeated (yy*ncols).
+                 */
+                for (int yy = y0 ; yy <= y1 ; yy++) {
+                    int row_base = yy * ncols;
+                    for (int xx = x0 ; xx <= x1 ; xx++) {
+                        float gx = gx_img[row_base + xx];
+                        float gy = gy_img[row_base + xx];
+                        gxx += gx * gx;
+                        gxy += gx * gy;
+                        gyy += gy * gy;
+                    }
+                }
+
+                /* Eigenvalue formula EXACTLY preserved */
+                float diff = gxx - gyy;
+                float sq = diff*diff + 4.0f * gxy * gxy;
+                float val = (gxx + gyy - sqrtf(sq)) * 0.5f;
+
+                if (val > (float)limit) val = (float)limit;
+
+                int idx = iy * nx + ix;
+
+                pointlist[3*idx    ] = x;
+                pointlist[3*idx + 1] = y;
+                pointlist[3*idx + 2] = (int)val;
             }
-
-            val = (gxx + gyy - sqrtf((gxx - gyy)*(gxx - gyy) + 4.0f*gxy*gxy)) * 0.5f;
-            if (val > (float)limit) val = (float)limit;
-
-            int iy = (y - bordery) / step;
-            int ix = (x - borderx) / step;
-            int idx = iy * nx + ix;
-
-            temp_x[idx]   = x;
-            temp_y[idx]   = y;
-            temp_val[idx] = (int)val;
-          }
         }
-      } /* end acc data */
 
-      /* Copy results into pointlist on CPU */
-      ptr = pointlist;
-      for (i = 0; i < total_points; i++) {
-        *ptr++ = temp_x[i];
-        *ptr++ = temp_y[i];
-        *ptr++ = temp_val[i];
-      }
-      npoints = total_points;
-
-      free(temp_x);
-      free(temp_y);
-      free(temp_val);
+        npoints = total_points;
     }
-  }
-  /* =================== END OPENACC COMPUTATION =================== */
+}
+/* =================== END OPENACC COMPUTATION =================== */
+
 
   _sortPointList(pointlist, npoints);
 

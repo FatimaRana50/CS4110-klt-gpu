@@ -234,58 +234,6 @@ KLT_FeatureTable KLTReadFeatureTable(
 #ifdef __cplusplus
 }
 #endif
-/* COPY ENTIRE FILE FROM V1, THEN ADD BEFORE #endif: */
-
-/*********************************************************************
- * OpenACC-Accelerated Functions (Internal)
- * 
- * These are called internally by the standard KLT functions when
- * compiled with OpenACC support. User code (examples) doesn't need
- * to call these directly.
- *********************************************************************/
-
-#ifdef _OPENACC
-
-/* Internal OpenACC implementations */
-void _KLTSelectGoodFeatures_ACC(
-    KLT_TrackingContext tc,
-    KLT_PixelType *img,
-    int ncols,
-    int nrows,
-    KLT_FeatureList featurelist);
-
-void _KLTTrackFeatures_ACC(
-    KLT_TrackingContext tc,
-    KLT_PixelType *img1,
-    KLT_PixelType *img2,
-    int ncols,
-    int nrows,
-    KLT_FeatureList featurelist);
-
-void _computeGradients_ACC(
-    KLT_PixelType *img,
-    float *grad_x,
-    float *grad_y,
-    int ncols,
-    int nrows);
-
-void _convolveImageHoriz_ACC(
-    float *imgin,
-    int ncols,
-    int nrows,
-    float *kernel,
-    int kernel_size,
-    float *imgout);
-
-void _convolveImageVert_ACC(
-    float *imgin,
-    int ncols,
-    int nrows,
-    float *kernel,
-    int kernel_size,
-    float *imgout);
-
-#endif /* _OPENACC */
 
 #endif
 

@@ -4,6 +4,7 @@ Tracks 500 best features across all frames in FatimaDataset (001.pgm–122.pgm)
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>          // <-- added for timing
 #include "pnmio.h"
 #include "klt.h"
 
@@ -48,6 +49,12 @@ int main()
         return -1;
     }
 
+    /* ============================
+       START TIMING BEFORE WORK
+       ============================ */
+    clock_t start_clock = clock();
+    /* ============================ */
+
     /* --- Select good features in the first frame --- */
     KLTSelectGoodFeatures(tc, img1, ncols, nrows, fl);
     KLTStoreFeatureList(fl, ft, 0);
@@ -78,7 +85,15 @@ int main()
         img2 = tmp;
     }
 
-    /* --- Write out results --- */
+    /* ============================
+       END TIMING BEFORE ANY WRITES
+       ============================ */
+    clock_t end_clock = clock();
+    double total_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
+    printf("\n[CPU] Feature selection + tracking runtime: %.3f s\n", total_time);
+    /* ============================ */
+
+    /* --- Write out results (NOT included in timing) --- */
     KLTWriteFeatureTable(ft, "features.txt", "%5.1f");
     KLTWriteFeatureTable(ft, "features.ft", NULL);
 

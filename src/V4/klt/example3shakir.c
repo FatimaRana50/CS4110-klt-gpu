@@ -5,6 +5,7 @@ frame_0001.pgm to frame_0044.pgm.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>          // <-- added for timing
 #include "pnmio.h"
 #include "klt.h"
 
@@ -39,6 +40,12 @@ int main()
   img1 = pgmReadFile(fnamein, NULL, &ncols, &nrows);
   img2 = (unsigned char *) malloc(ncols * nrows * sizeof(unsigned char));
 
+  // ============================
+  // START TIMING BEFORE WORK
+  // ============================
+  clock_t start_clock = clock();
+  // ============================
+
   // Select good features in the first frame
   KLTSelectGoodFeatures(tc, img1, ncols, nrows, fl);
   KLTStoreFeatureList(fl, ft, 0);
@@ -61,7 +68,15 @@ int main()
     //KLTWriteFeatureListToPPM(fl, img2, ncols, nrows, fnameout);
   }
 
-  // Write out results
+  // ============================
+  // END TIMING BEFORE ANY WRITES
+  // ============================
+  clock_t end_clock = clock();
+  double total_time = (double)(end_clock - start_clock) / CLOCKS_PER_SEC;
+  printf("\n[CPU] Feature selection + tracking runtime: %.3f s\n", total_time);
+  // ============================
+
+  // Write out results (not included in timing)
   KLTWriteFeatureTable(ft, "features.txt", "%5.1f");
   KLTWriteFeatureTable(ft, "features.ft", NULL);
 
