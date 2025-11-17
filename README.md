@@ -212,6 +212,72 @@ Version 3 delivers a **fully optimized GPU implementation** of KLT using CUDA st
 
 ---
 
+# CS4110 KLT GPU - Version 4 (V4)
+
+## GPU Acceleration of Kanade–Lucas–Tomasi (KLT) Feature Tracking
+
+---
+
+## OpenACC Implementation (V4)
+
+V4 parallelizes major computational bottlenecks identified in previous versions:  
+
+1. **Separable Convolution:** Accelerated Gaussian smoothing and gradient computation using OpenACC parallel loops and device-resident data regions.  
+2. **Gradient Computation:** Parallelized across GPU threads, significantly reducing runtime for feature selection and tracking.  
+3. **Eigenvalue-Based Feature Scoring:** Structure-tensor eigenvalues for candidate pixels are computed independently per thread.  
+4. **Gaussian Pyramid Construction:** Parallelized subsampling and smoothing for efficient multi-level pyramid generation.  
+
+**Memory Management:**  
+OpenACC data regions keep intermediate images and pyramid buffers on the GPU, reducing CPU–GPU transfers while preserving algorithmic correctness. Only outer parallel loops were offloaded; sequential execution was preserved where rounding order matters.
+
+---
+
+## Profiling and Performance
+
+### Profiling Breakdown Graph
+Shows GPU time distribution across major kernels. Intensity difference computation dominates (~55%), followed by gradient summation (~42%).
+
+![Profiling Breakdown](src/V4/klt/profiling/pic1.jpeg)
+
+### Detailed Performance Metrics
+CPU vs GPU speedup across datasets and feature counts:
+
+![Performance Metrics](https://github.com/FatimaRana50/CS4110-klt-gpu/blob/main/src/V4/klt/profiling/pic2.jpeg)
+
+| Image   | 150 Features | 500 Features | 1000 Features |
+|---------|-------------|-------------|---------------|
+| Fatima  | 2.01×       | 2.56×       | 2.58×         |
+| Shakir  | 5.33×       | 4.31×       | 4.33×         |
+| Rana    | 2.80×       | 2.86×       | 2.93×         |
+| Masooma | 2.95×       | 3.07×       | 3.25×         |
+
+### V4 Version Comparison
+Bar chart showing performance improvements of V4 relative to previous versions:
+
+![V4 Comparison](src/V4/klt/profiling/pic3.jpeg)
+
+---
+
+## Key Findings
+
+- GPU acceleration yields higher speedups for larger datasets (e.g., Masooma dataset with 284 frames).  
+- OpenACC delivers 2.58× to 4.33× speedup with minimal code changes, while optimized CUDA achieves up to 6.47×.  
+- Profiling identifies intensity difference computation and gradient summation as dominant kernels, guiding optimization efforts.  
+- Directive-based parallelism (OpenACC) balances ease-of-development with performance gains.
+
+---
+
+## Conclusion
+
+V4 demonstrates that OpenACC can significantly accelerate KLT feature tracking while maintaining code readability, portability, and correctness. It validates that directive-based GPU programming is a practical alternative to hand-optimized CUDA for scientific workloads.  
+
+Future work may include hybrid CPU-GPU scheduling, multi-GPU deployment, and integration with deep learning pipelines for real-time visual computing.
+
+---
+
+**Repository:** [CS4110 KLT GPU on GitHub](https://github.com/FatimaRana50/CS4110-klt-gpu)
+
+
 👩‍💻 Contributors
 
 Fatima Farrukh Rana
