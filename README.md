@@ -232,6 +232,20 @@ OpenACC data regions keep intermediate images and pyramid buffers on the GPU, re
 
 ---
 
+## ⚙️ How to Build and Profile
+
+### 🔧 1. Build & Profile example3shakir
+Run the following command inside src/V4/klt:
+
+```bash
+make run
+```
+Run with OpenACC kernel profiling:
+```
+NV_ACC_TIME=1 ./example3shakir
+
+```
+
 ## Profiling and Performance
 
 ### Profiling Breakdown Graph
